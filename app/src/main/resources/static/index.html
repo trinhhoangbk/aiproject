@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hub — Quản lý Workload MBS</title>
+  <link rel="stylesheet" href="/css/app.css">
+</head>
+<body data-page="shell">
+  <!-- PLAN-032 SPA shell. No bundler, no Node. Pure HTML + a tiny vanilla JS router.
+       Vietnamese UI copy per DEC-016. -->
+  <header class="topbar">
+    <div class="brand">Hub <small>— Workload &amp; Phân phối nguồn lực</small></div>
+    <nav class="nav" id="nav" hidden>
+      <a href="#/workload"  data-nav="workload">Khối lượng công việc</a>
+      <a href="#/daily"     data-nav="daily">Báo cáo ngày</a>
+      <a href="#/overdue"   data-nav="overdue">Quá hạn &amp; Cảnh báo</a>
+      <a href="#/heatmap"   data-nav="heatmap" data-role="MANAGER,ADMIN">Heatmap</a>
+      <a href="#/eta"       data-nav="eta">ETA cá nhân</a>
+      <a href="#/pipeline"  data-nav="pipeline" data-role="MANAGER,ADMIN">Pipeline dự án</a>
+      <a href="#/balancing" data-nav="balancing" data-role="MANAGER,ADMIN">Cân đối nguồn lực</a>
+      <a href="#/admin"     data-nav="admin" data-role="ADMIN">Quản trị</a>
+    </nav>
+    <div class="me" id="me"></div>
+  </header>
+
+  <main id="view"><p class="loading">Đang tải…</p></main>
+
+  <footer class="footer">
+    <small>
+      MBS Hub · prototype dev-host · <span id="buildstamp"></span> ·
+      <a href="#/" id="logout" hidden>Đăng xuất</a>
+    </small>
+  </footer>
+
+  <script type="module" src="/js/app.js"></script>
+</body>
+</html>

@@ -43,8 +43,9 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                 .requestMatchers("/actuator/prometheus", "/actuator/metrics/**").hasRole("ADMIN")
                 .requestMatchers("/api/auth/login", "/api/auth/me", "/api/auth/logout").permitAll()
-                // SPA static assets
-                .requestMatchers("/", "/index.html", "/static/**", "/assets/**").permitAll()
+                // SPA static assets (PLAN-032): served from classpath:/static/
+                .requestMatchers("/", "/index.html", "/favicon.ico",
+                                 "/js/**", "/css/**", "/static/**", "/assets/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(login -> login

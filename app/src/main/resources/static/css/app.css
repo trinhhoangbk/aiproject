@@ -1,0 +1,89 @@
+/* PLAN-032 SPA style sheet — tiny vanilla design system.
+   Vietnamese UI (DEC-016). Dark-green / Light-green / Yellow / Red bands = DEC-011. */
+
+:root {
+  --bg: #f7f8fa;
+  --fg: #1b1f23;
+  --mut: #6b7280;
+  --card: #ffffff;
+  --line: #e5e7eb;
+  --brand: #0f766e;
+  --brand-fg: #ffffff;
+  --dark-green: #166534;
+  --light-green: #16a34a;
+  --yellow: #eab308;
+  --red: #dc2626;
+  --none-gray: #d1d5db;
+
+  --radius: 10px;
+  --pad: 12px;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; font-family: var(--sans); color: var(--fg); background: var(--bg); }
+
+.topbar {
+  display: flex; align-items: center; gap: 16px;
+  padding: 10px 20px; background: var(--brand); color: var(--brand-fg);
+}
+.topbar .brand { font-weight: 700; letter-spacing: 0.3px; }
+.topbar .brand small { font-weight: 400; opacity: 0.8; }
+.topbar .nav { display: flex; gap: 10px; flex: 1; }
+.topbar .nav a { color: var(--brand-fg); text-decoration: none; opacity: 0.8; padding: 6px 10px; border-radius: 6px; }
+.topbar .nav a:hover, .topbar .nav a.active { opacity: 1; background: rgba(255,255,255,0.14); }
+.topbar .me { opacity: 0.9; font-size: 14px; }
+
+main { max-width: 1200px; margin: 24px auto; padding: 0 20px 60px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: var(--pad); margin-bottom: 16px; }
+h1 { font-size: 22px; margin: 0 0 12px; }
+h2 { font-size: 16px; margin: 0 0 10px; }
+.loading { color: var(--mut); padding: 20px; }
+
+.filters { display: flex; gap: 10px; align-items: end; flex-wrap: wrap; margin-bottom: 16px; }
+.filters label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--mut); }
+.filters input, .filters select, .filters button {
+  font: inherit; padding: 6px 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff;
+}
+.filters button { cursor: pointer; background: var(--brand); color: #fff; border-color: var(--brand); }
+.filters button:hover { filter: brightness(1.05); }
+
+table { width: 100%; border-collapse: collapse; font-size: 14px; }
+th, td { padding: 8px 10px; text-align: left; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { background: #f1f5f9; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--mut); }
+tr:hover td { background: #f8fafc; }
+td.num { text-align: right; font-variant-numeric: tabular-nums; }
+code { font-family: var(--mono); font-size: 12px; }
+
+.badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600; color: #fff; }
+.badge.band-dark_green    { background: var(--dark-green); }
+.badge.band-light_green   { background: var(--light-green); }
+.badge.band-yellow        { background: var(--yellow); color: #111; }
+.badge.band-red           { background: var(--red); }
+.badge.band-none          { background: var(--none-gray); color: #111; }
+.badge.band-1_to_3_days   { background: var(--yellow); color: #111; }
+.badge.band-4_to_7_days   { background: #f97316; }
+.badge.band-more_than_a_week { background: var(--red); }
+
+.heatmap { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.heatmap .cell { background: #fff; padding: 10px; min-height: 60px; }
+.heatmap .cell.band-dark_green  { background: #dcfce7; }
+.heatmap .cell.band-light_green { background: #bbf7d0; }
+.heatmap .cell.band-yellow      { background: #fef9c3; }
+.heatmap .cell.band-red         { background: #fee2e2; }
+.heatmap .cell .name   { font-size: 13px; font-weight: 600; }
+.heatmap .cell .metric { font-size: 12px; color: var(--mut); margin-top: 4px; font-variant-numeric: tabular-nums; }
+
+.login-wrap { display: flex; align-items: center; justify-content: center; min-height: 50vh; }
+.login-card { max-width: 360px; width: 100%; padding: 24px; }
+.login-card label { display: block; margin: 10px 0 4px; font-size: 13px; }
+.login-card input { width: 100%; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; font: inherit; }
+.login-card button { width: 100%; margin-top: 16px; padding: 10px; border: 0; border-radius: 6px; background: var(--brand); color: #fff; font: inherit; cursor: pointer; }
+.login-card .error { color: var(--red); margin-top: 10px; font-size: 13px; }
+
+.footer { text-align: center; color: var(--mut); margin: 40px 0 20px; font-size: 12px; }
+.footer a { color: var(--brand); text-decoration: none; margin-left: 10px; }
+
+.empty { color: var(--mut); padding: 10px 0; font-style: italic; }
+.pill { display: inline-block; padding: 2px 6px; border: 1px solid var(--line); border-radius: 4px; font-size: 11px; color: var(--mut); margin-left: 4px; }
