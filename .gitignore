@@ -1,0 +1,29 @@
+# Repository root .gitignore
+# Project-wide ignores on top of app/.gitignore for everything else.
+
+# macOS Finder cruft
+.DS_Store
+._*
+
+# Secrets — NEVER commit (there is also app/.gitignore + deploy/.env.example only)
+.env
+*.pem
+*.key
+*.pfx
+
+# Build outputs (also handled by app/.gitignore)
+build/
+out/
+.gradle/
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+
+# Artefacts the operator shouldn't track
+claude-context-layer.zip
+.claude 2/
+
+# Local Postgres pg_dump backups (operator-managed PRE-00 artefacts)
+deploy/backups/

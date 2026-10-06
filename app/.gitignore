@@ -1,0 +1,29 @@
+# Build output
+build/
+out/
+.gradle/
+bin/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+.project
+.classpath
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets — NEVER commit
+.env
+.env.local
+*.pem
+*.key
+
+# Local run artefacts
+logs/
+*.log
+
+# Gradle wrapper JAR is committed per convention (do NOT ignore gradle/wrapper/*)

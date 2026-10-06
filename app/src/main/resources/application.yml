@@ -1,0 +1,114 @@
+# Hub — application configuration
+# Reads env from .env file (operator-managed, perm 0600) via Docker Compose.
+# Baselines: DEC-002 (Asia/Saigon), DEC-004 (3-tier capacity), TD-002 (Flyway).
+
+spring:
+  application:
+    name: hub
+  profiles:
+    active: dev
+
+  # ----- Datasource (PostgreSQL 16) -----
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/hub}
+    username: ${DB_USER:hub}
+    password: ${DB_PASS:hub}
+    hikari:
+      maximum-pool-size: 100         # sized for ~150 concurrent viewers (O-07 answer)
+      minimum-idle: 10
+      pool-name: hub-pg
+
+  jpa:
+    hibernate:
+      ddl-auto: validate              # Schema is Flyway-owned (TD-002, TD-010)
+    properties:
+      hibernate:
+        jdbc.time_zone: Asia/Saigon
+        format_sql: false
+    open-in-view: false
+
+  # ----- Flyway migrations (TD-002) -----
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+    out-of-order: false               # Forward-only (TD-010)
+    validate-on-migrate: true
+
+  # ----- Kafka (ADR-ARCH-004) -----
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    consumer:
+      group-id: hub
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        isolation.level: read_committed
+    producer:
+      acks: all
+      properties:
+        enable.idempotence: true
+    listener:
+      ack-mode: manual_immediate
+
+  # ----- Session / web -----
+  mvc:
+    problemdetails:
+      enabled: true                   # RFC 7807 (02 API §6)
+  jackson:
+    time-zone: Asia/Saigon
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false   # Tolerate Jira field drift
+
+# ----- Server -----
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# ----- Hub-specific configuration -----
+hub:
+  timezone: Asia/Saigon                                   # DEC-002
+  bootstrap:
+    admin-email: ${HUB_BOOTSTRAP_ADMIN_EMAIL:}            # One-shot bootstrap (TD-012)
+  jira:
+    base-url: ${JIRA_BASE_URL:}                           # e.g. https://your.atlassian.net
+    user-email: ${JIRA_USER_EMAIL:}
+    api-token: ${JIRA_API_TOKEN:}                         # ADR-ARCH-010
+    webhook-secret: ${JIRA_WEBHOOK_SECRET:}               # 05 Security §4.3
+    write-dry-run: ${JIRA_WRITE_DRY_RUN:true}             # PLAN-COND-01 — DEFAULT TRUE
+    reconciler-cron: "0 0 * * * *"                        # Hourly on the hour
+    reconciler-adaptive-cadence: true                     # TD-COND-04
+  tunnel:
+    public-url: ${HUB_PUBLIC_URL:http://localhost:8080}
+  audit:
+    db-retention-days: ${AUDIT_RETENTION_DAYS:30}         # F-ARCH-NEW-02 Reading A
+    kafka-retention-hours: ${KAFKA_AUDIT_RETENTION_HOURS:168}
+  capacity:
+    global-daily-hours: 8                                 # Default; DEC-004 (overridable at Team/Member)
+    global-weekly-hours: 40
+
+# ----- Observability (TD §7) -----
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: when-authorized
+  metrics:
+    tags:
+      application: hub
+
+# ----- Logging -----
+logging:
+  config: classpath:logback-spring.xml
+  level:
+    root: INFO
+    com.mbs.hub: INFO
+    org.springframework.security: INFO
+    org.apache.kafka: WARN

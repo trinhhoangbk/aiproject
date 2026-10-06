@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Workload Hub — Architecture</title>
+<style>
+  :root {
+    --bg: #0b1220;
+    --panel: #121a2e;
+    --panel-2: #1a2541;
+    --ink: #e6edf7;
+    --ink-dim: #9fb0c9;
+    --accent: #7aa2f7;
+    --ok: #4ade80;
+    --warn: #fbbf24;
+    --danger: #f87171;
+    --jira: #2684ff;
+    --kafka: #ff6b35;
+    --postgres: #336791;
+    --hub: #a78bfa;
+    --line: #314058;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  :root:not([data-theme="dark"]) {
+    @media (prefers-color-scheme: light) {
+      --bg:#f6f7fb; --panel:#ffffff; --panel-2:#f0f3fa;
+      --ink:#111827; --ink-dim:#4b5563; --line:#d1d9e6;
+    }
+  }
+  :root[data-theme="light"] {
+    --bg:#f6f7fb; --panel:#ffffff; --panel-2:#f0f3fa;
+    --ink:#111827; --ink-dim:#4b5563; --line:#d1d9e6;
+  }
+  html,body { margin:0; padding:0; background:var(--bg); color:var(--ink); font-family:var(--sans); }
+  main { max-width: 1280px; margin: 32px auto 64px; padding: 0 16px; }
+  header h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  header .sub { color: var(--ink-dim); font-size: 13px; margin-bottom: 24px; }
+  header .baselines { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0 24px; }
+  header .baselines span { background: var(--panel-2); border: 1px solid var(--line); color: var(--ink-dim); padding: 3px 8px; border-radius: 999px; font-size: 11px; font-family: var(--mono); }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 20px; margin-bottom: 24px; box-shadow: 0 1px 0 rgba(0,0,0,0.1); }
+  section h2 { font-size: 15px; margin: 0 0 2px; letter-spacing: 0.02em; }
+  section .caption { color: var(--ink-dim); font-size: 12px; margin-bottom: 14px; }
+  .svg-wrap { overflow-x: auto; }
+  svg { display: block; width: 100%; height: auto; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; font-size: 11px; color: var(--ink-dim); }
+  .legend .chip { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .sw { width: 10px; height: 10px; border-radius: 3px; display:inline-block; }
+  footer { color: var(--ink-dim); font-size: 11px; margin-top: 16px; }
+  code { font-family: var(--mono); font-size: 11px; color: var(--ink); background: var(--panel-2); padding: 1px 5px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Multi-Project Workload &amp; Resource Balancing Hub — v1.0</h1>
+    <div class="sub">Modular Spring Boot monolith · PostgreSQL · Kafka · Jira Cloud Free (REST v3 + Webhooks) · dev-host deployment</div>
+    <div class="baselines">
+      <span>BUSINESS APPROVED · 15:46</span>
+      <span>CONTEXT APPROVED · 15:54</span>
+      <span>ARCHITECTURE APPROVED · 16:04</span>
+      <span>TD APPROVED · 16:20</span>
+      <span>PLAN APPROVED · 16:30</span>
+      <span>2026-10-04 · Asia/Saigon</span>
+    </div>
+  </header>
+
+  <!-- =============================================================== -->
+  <!-- DIAGRAM 1 — CONTAINER VIEW                                      -->
+  <!-- =============================================================== -->
+  <section>
+    <h2>1. Container view — what runs on the developer machine &amp; how Jira talks to it</h2>
+    <div class="caption">Boxes = running processes. Dashed red = trust boundary. Solid arrows = request flow. Thin dotted = async / scheduled.</div>
+    <div class="svg-wrap">
+<svg viewBox="0 0 1200 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Container view">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9fb0c9"/>
+    </marker>
+    <marker id="arrAccent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7aa2f7"/>
+    </marker>
+    <marker id="arrOk" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4ade80"/>
+    </marker>
+    <marker id="arrJira" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2684ff"/>
+    </marker>
+  </defs>
+
+  <style>
+    .box { fill: #121a2e; stroke: #314058; stroke-width: 1.2; }
+    .box.hub { fill: #1a1a2e; stroke: #a78bfa; stroke-width: 1.6; }
+    .box.ext { fill: #0e2740; stroke: #2684ff; stroke-width: 1.4; }
+    .box.infra { fill: #0f2a24; stroke: #10b981; stroke-width: 1.4; }
+    .box.tunnel { fill: #2a1f0b; stroke: #fbbf24; stroke-width: 1.2; stroke-dasharray: 4 3; }
+    .box.browser { fill: #0e2740; stroke: #7aa2f7; stroke-width: 1.4; }
+    .title { font: 600 14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #e6edf7; }
+    .sub { font: 500 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #9fb0c9; }
+    .mono { font: 10px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #9fb0c9; }
+    .mono-ink { font: 10px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #e6edf7; }
+    .line { stroke: #9fb0c9; stroke-width: 1.5; fill: none; }
+    .line.accent { stroke: #7aa2f7; }
+    .line.ok { stroke: #4ade80; }
+    .line.jira { stroke: #2684ff; }
+    .line.dotted { stroke-dasharray: 4 4; }
+    .trust { stroke: #f87171; stroke-dasharray: 6 4; fill: none; stroke-width: 1.2; }
+    .lbl-pill { fill: #121a2e; stroke: #314058; stroke-width: 1; }
+    .lbl-pill-text { font: 500 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #e6edf7; }
+  </style>
+
+  <!-- Trust boundary: dev host -->
+  <rect x="24" y="80" width="760" height="520" rx="18" class="trust"/>
+  <text x="40" y="100" class="mono" style="fill:#f87171">dev-host trust boundary</text>
+
+  <!-- Trust boundary: public internet -->
+  <rect x="820" y="80" width="356" height="520" rx="18" class="trust"/>
+  <text x="836" y="100" class="mono" style="fill:#f87171">public internet (Atlassian + tunnel edge)</text>
+
+  <!-- Browser -->
+  <g>
+    <rect x="60" y="130" width="200" height="100" rx="10" class="box browser"/>
+    <text x="76" y="156" class="title">Browser (SPA)</text>
+    <text x="76" y="178" class="sub">Admin · Manager · Member</text>
+    <text x="76" y="200" class="mono">session cookie, HttpOnly</text>
+    <text x="76" y="216" class="mono">CSRF enabled</text>
+  </g>
+
+  <!-- Hub (big box) -->
+  <g>
+    <rect x="340" y="130" width="420" height="340" rx="14" class="box hub"/>
+    <text x="358" y="156" class="title" style="fill:#c4b5fd">Hub — Spring Boot 3.3 / Java 21</text>
+    <text x="358" y="174" class="sub">Modular monolith · one JVM · Docker container</text>
+
+    <!-- Inside: REST + Security -->
+    <rect x="358" y="192" width="384" height="52" rx="8" class="box"/>
+    <text x="372" y="212" class="title" style="font-size:12px">REST controllers · Spring Security filter</text>
+    <text x="372" y="230" class="mono">/api/* (session, RBAC)   ·   /webhooks/jira (HMAC)</text>
+
+    <!-- Domain -->
+    <rect x="358" y="256" width="384" height="60" rx="8" class="box"/>
+    <text x="372" y="276" class="title" style="font-size:12px">Domain Services</text>
+    <text x="372" y="294" class="mono">workload · overload · overdue · early-warning · reporting</text>
+    <text x="372" y="308" class="mono">ETA · pipeline · balancing · audit · capacity resolver (3-tier)</text>
+
+    <!-- Jira adapter -->
+    <rect x="358" y="328" width="188" height="68" rx="8" class="box"/>
+    <text x="372" y="348" class="title" style="font-size:12px">Jira Adapter</text>
+    <text x="372" y="366" class="mono">RestClient v3</text>
+    <text x="372" y="380" class="mono">ADF builder</text>
+    <text x="372" y="394" class="mono">rate-limit guard · 429 backoff</text>
+
+    <!-- Scheduler + Kafka wiring -->
+    <rect x="554" y="328" width="188" height="68" rx="8" class="box"/>
+    <text x="568" y="348" class="title" style="font-size:12px">Sync &amp; Scheduler</text>
+    <text x="568" y="366" class="mono">@Scheduled 1h reconcile</text>
+    <text x="568" y="380" class="mono">webhook controller</text>
+    <text x="568" y="394" class="mono">event consumer · MV refresher</text>
+
+    <!-- Static UI assets -->
+    <rect x="358" y="408" width="384" height="48" rx="8" class="box"/>
+    <text x="372" y="428" class="title" style="font-size:12px">Static SPA assets</text>
+    <text x="372" y="444" class="mono">src/main/resources/static · pre-built, no Node in image (PLAN-COND-02)</text>
+  </g>
+
+  <!-- Postgres -->
+  <g>
+    <rect x="60" y="488" width="320" height="92" rx="10" class="box infra"/>
+    <text x="76" y="512" class="title" style="fill:#86efac">PostgreSQL 16</text>
+    <text x="76" y="530" class="mono">schemas: core · jira · audit · mv</text>
+    <text x="76" y="546" class="mono">materialized views: allocation_rate, member_overdue</text>
+    <text x="76" y="562" class="mono">Flyway V001…V006 · forward-only</text>
+  </g>
+
+  <!-- Kafka -->
+  <g>
+    <rect x="420" y="488" width="340" height="92" rx="10" class="box infra"/>
+    <text x="436" y="512" class="title" style="fill:#86efac">Apache Kafka (KRaft, no ZooKeeper)</text>
+    <text x="436" y="530" class="mono">topics:</text>
+    <text x="436" y="546" class="mono">jira.inbound.events · hub.domain.events</text>
+    <text x="436" y="562" class="mono">hub.audit · hub.sync.commands · DLQ</text>
+  </g>
+
+  <!-- Tunnel -->
+  <g>
+    <rect x="820" y="214" width="140" height="80" rx="10" class="box tunnel"/>
+    <text x="836" y="238" class="title" style="fill:#fbbf24">Tunnel</text>
+    <text x="836" y="258" class="mono">ngrok / cloudflared</text>
+    <text x="836" y="274" class="mono">exposes ONLY</text>
+    <text x="836" y="288" class="mono-ink">/webhooks/jira</text>
+  </g>
+
+  <!-- Jira Cloud -->
+  <g>
+    <rect x="990" y="130" width="170" height="200" rx="10" class="box ext"/>
+    <text x="1006" y="154" class="title" style="fill:#60a5fa">Jira Cloud</text>
+    <text x="1006" y="172" class="sub">Free tier · ≤ 10 users</text>
+    <text x="1006" y="198" class="mono">REST API v3</text>
+    <text x="1006" y="214" class="mono">Webhooks</text>
+    <text x="1006" y="234" class="mono">allow-list:</text>
+    <text x="1006" y="248" class="mono-ink">PRJ-A · PRJ-B · CORE-SYS</text>
+    <text x="1006" y="272" class="mono">service account</text>
+    <text x="1006" y="286" class="mono">(API Token · DEC-006)</text>
+    <text x="1006" y="314" class="mono" style="fill:#fbbf24">upgrade to Standard</text>
+    <text x="1006" y="328" class="mono" style="fill:#fbbf24">before member #11</text>
+  </g>
+
+  <!-- Arrows -->
+  <!-- Browser → Hub REST -->
+  <path d="M 260 180 C 300 180, 300 218, 340 218" class="line accent" marker-end="url(#arrAccent)"/>
+  <g><rect x="258" y="150" width="78" height="18" rx="9" class="lbl-pill"/><text x="264" y="163" class="lbl-pill-text">HTTPS · session</text></g>
+
+  <!-- Hub REST ↔ Domain -->
+  <path d="M 550 244 L 550 256" class="line" marker-end="url(#arr)"/>
+
+  <!-- Domain ↔ Postgres -->
+  <path d="M 360 316 C 300 420, 240 420, 220 488" class="line ok" marker-end="url(#arrOk)" marker-start="url(#arrOk)"/>
+  <g><rect x="200" y="420" width="104" height="18" rx="9" class="lbl-pill"/><text x="206" y="433" class="lbl-pill-text">JPA · txn-scoped</text></g>
+
+  <!-- Sync ↔ Kafka -->
+  <path d="M 648 396 L 580 488" class="line ok dotted" marker-end="url(#arrOk)" marker-start="url(#arrOk)"/>
+  <g><rect x="582" y="430" width="90" height="18" rx="9" class="lbl-pill"/><text x="588" y="443" class="lbl-pill-text">produce/consume</text></g>
+
+  <!-- Jira → Tunnel → Webhook -->
+  <path d="M 990 220 L 960 240" class="line jira" marker-start="url(#arrJira)"/>
+  <path d="M 820 254 C 790 254, 790 220, 742 220" class="line jira" marker-end="url(#arrJira)"/>
+  <g><rect x="854" y="178" width="88" height="18" rx="9" class="lbl-pill"/><text x="860" y="191" class="lbl-pill-text">POST webhook</text></g>
+
+  <!-- Hub Jira Adapter → Jira Cloud -->
+  <path d="M 548 362 C 700 362, 800 400, 990 400 L 1020 330" class="line jira" marker-end="url(#arrJira)"/>
+  <g><rect x="836" y="396" width="140" height="18" rx="9" class="lbl-pill"/><text x="842" y="409" class="lbl-pill-text">GET /search · PUT assignee</text></g>
+
+  <!-- MV refresh (internal) -->
+  <path d="M 648 396 C 500 440, 320 460, 220 488" class="line dotted" marker-end="url(#arr)"/>
+
+</svg>
+    </div>
+    <div class="legend">
+      <span class="chip"><span class="sw" style="background:#7aa2f7"></span>Browser / user session</span>
+      <span class="chip"><span class="sw" style="background:#a78bfa"></span>Hub (Spring Boot modular monolith)</span>
+      <span class="chip"><span class="sw" style="background:#10b981"></span>Infrastructure (Postgres, Kafka)</span>
+      <span class="chip"><span class="sw" style="background:#2684ff"></span>External (Jira Cloud)</span>
+      <span class="chip"><span class="sw" style="background:#fbbf24"></span>Tunnel (ngrok / Cloudflare)</span>
+      <span class="chip"><span class="sw" style="background:#f87171"></span>Trust boundary</span>
+    </div>
+  </section>
+
+  <!-- =============================================================== -->
+  <!-- DIAGRAM 2 — COMPONENT VIEW                                      -->
+  <!-- =============================================================== -->
+  <section>
+    <h2>2. Component view — inside the Hub, by Spring Boot package</h2>
+    <div class="caption">Each box is a package under <code>com.mbs.hub.*</code>. Arrows show at-rest dependencies, not request flow. Data stores at bottom.</div>
+    <div class="svg-wrap">
+<svg viewBox="0 0 1200 640" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Component view">
+  <defs>
+    <marker id="c-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9fb0c9"/>
+    </marker>
+  </defs>
+  <style>
+    .c-box { fill: #121a2e; stroke: #314058; stroke-width: 1.2; }
+    .c-box.inbound { stroke: #7aa2f7; }
+    .c-box.outbound { stroke: #2684ff; }
+    .c-box.domain { stroke: #a78bfa; }
+    .c-box.security { stroke: #f87171; }
+    .c-box.data { stroke: #10b981; fill:#0f2a24; }
+    .c-box.async { stroke: #fbbf24; }
+    .c-title { font: 600 12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #e6edf7; }
+    .c-pkg { font: 10px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #9fb0c9; }
+    .c-note { font: 10px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #9fb0c9; }
+    .c-line { stroke: #9fb0c9; stroke-width: 1.2; fill: none; }
+    .c-section-title { font: 700 11px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: #9fb0c9; letter-spacing: 0.08em; }
+  </style>
+
+  <!-- Section bands -->
+  <text x="24" y="40" class="c-section-title">INBOUND / API</text>
+  <text x="24" y="190" class="c-section-title">DOMAIN</text>
+  <text x="24" y="400" class="c-section-title">INTEGRATION &amp; ASYNC</text>
+  <text x="24" y="560" class="c-section-title">DATA STORES</text>
+
+  <!-- Inbound / API row -->
+  <g>
+    <rect x="24" y="52" width="200" height="100" rx="8" class="c-box security"/>
+    <text x="38" y="74" class="c-title">security</text>
+    <text x="38" y="90" class="c-pkg">SecurityConfig</text>
+    <text x="38" y="104" class="c-pkg">UserDetailsServiceImpl</text>
+    <text x="38" y="118" class="c-pkg">PasswordEncoder (BCrypt-12)</text>
+    <text x="38" y="134" class="c-note">RBAC · @PreAuthorize · CSRF</text>
+  </g>
+  <g>
+    <rect x="244" y="52" width="300" height="100" rx="8" class="c-box inbound"/>
+    <text x="258" y="74" class="c-title">REST controllers · 15 families</text>
+    <text x="258" y="90" class="c-pkg">roster · capacity · holiday · allowlist · skill</text>
+    <text x="258" y="104" class="c-pkg">workload · overdue · reporting · eta</text>
+    <text x="258" y="118" class="c-pkg">pipeline · balancing · assignments · heatmap · audit · auth</text>
+    <text x="258" y="134" class="c-note">RFC 7807 ProblemDetails</text>
+  </g>
+  <g>
+    <rect x="564" y="52" width="200" height="100" rx="8" class="c-box inbound"/>
+    <text x="578" y="74" class="c-title">jira.webhook</text>
+    <text x="578" y="90" class="c-pkg">JiraWebhookController</text>
+    <text x="578" y="104" class="c-pkg">HmacVerifier</text>
+    <text x="578" y="118" class="c-note">verifies X-Hub-Signature</text>
+    <text x="578" y="134" class="c-note">publishes to Kafka</text>
+  </g>
+  <g>
+    <rect x="784" y="52" width="200" height="100" rx="8" class="c-box inbound"/>
+    <text x="798" y="74" class="c-title">ui (static)</text>
+    <text x="798" y="90" class="c-pkg">src/main/resources/static</text>
+    <text x="798" y="104" class="c-note">pre-built SPA, Vietnamese UI</text>
+    <text x="798" y="120" class="c-note">no Node in image (PLAN-COND-02)</text>
+  </g>
+  <g>
+    <rect x="1004" y="52" width="170" height="100" rx="8" class="c-box inbound"/>
+    <text x="1018" y="74" class="c-title">config</text>
+    <text x="1018" y="90" class="c-pkg">ClockConfig(Asia/Saigon)</text>
+    <text x="1018" y="104" class="c-pkg">KafkaConfig · WebConfig</text>
+    <text x="1018" y="124" class="c-note">env from .env (0600)</text>
+  </g>
+
+  <!-- Domain row -->
+  <g>
+    <rect x="24" y="202" width="200" height="90" rx="8" class="c-box domain"/>
+    <text x="38" y="222" class="c-title">workload</text>
+    <text x="38" y="238" class="c-pkg">WorkloadService</text>
+    <text x="38" y="252" class="c-pkg">OverloadService</text>
+    <text x="38" y="266" class="c-pkg">EtaService (α · 10 WD)</text>
+    <text x="38" y="282" class="c-note">B-RULE-02/03 · DEC-010</text>
+  </g>
+  <g>
+    <rect x="244" y="202" width="200" height="90" rx="8" class="c-box domain"/>
+    <text x="258" y="222" class="c-title">overdue</text>
+    <text x="258" y="238" class="c-pkg">OverdueService</text>
+    <text x="258" y="252" class="c-pkg">EarlyWarningService</text>
+    <text x="258" y="268" class="c-note">bands 1_to_3 / 4_to_7 / &gt;week</text>
+    <text x="258" y="282" class="c-note">TPR per DEC-009 (0.7, 1.0)</text>
+  </g>
+  <g>
+    <rect x="464" y="202" width="200" height="90" rx="8" class="c-box domain"/>
+    <text x="478" y="222" class="c-title">reporting</text>
+    <text x="478" y="238" class="c-pkg">DailyReportService</text>
+    <text x="478" y="256" class="c-note">statusCategory='done'</text>
+    <text x="478" y="270" class="c-note">Discarded flag (DEC-001)</text>
+    <text x="478" y="284" class="c-note">calendar day Asia/Saigon</text>
+  </g>
+  <g>
+    <rect x="684" y="202" width="200" height="90" rx="8" class="c-box domain"/>
+    <text x="698" y="222" class="c-title">pipeline · balancing</text>
+    <text x="698" y="238" class="c-pkg">PipelineService</text>
+    <text x="698" y="252" class="c-pkg">BalancingService</text>
+    <text x="698" y="266" class="c-pkg">AssignmentService</text>
+    <text x="698" y="282" class="c-note">AR bands per DEC-011</text>
+  </g>
+  <g>
+    <rect x="904" y="202" width="140" height="90" rx="8" class="c-box domain"/>
+    <text x="918" y="222" class="c-title">capacity</text>
+    <text x="918" y="238" class="c-pkg">CapacityResolver</text>
+    <text x="918" y="254" class="c-note">3-tier:</text>
+    <text x="918" y="268" class="c-note">Member › Team › Global</text>
+    <text x="918" y="282" class="c-note">(DEC-004)</text>
+  </g>
+  <g>
+    <rect x="1064" y="202" width="110" height="90" rx="8" class="c-box domain"/>
+    <text x="1078" y="222" class="c-title">audit</text>
+    <text x="1078" y="238" class="c-pkg">AuditService</text>
+    <text x="1078" y="256" class="c-note">append-only</text>
+    <text x="1078" y="272" class="c-note">rolling retention</text>
+    <text x="1078" y="286" class="c-note">(F-ARCH-NEW-02)</text>
+  </g>
+
+  <!-- Core small boxes row -->
+  <g>
+    <rect x="24" y="304" width="180" height="60" rx="8" class="c-box"/>
+    <text x="38" y="326" class="c-title">roster</text>
+    <text x="38" y="344" class="c-pkg">members · jira_account_id map</text>
+    <text x="38" y="358" class="c-note">DEC-006</text>
+  </g>
+  <g>
+    <rect x="214" y="304" width="150" height="60" rx="8" class="c-box"/>
+    <text x="228" y="326" class="c-title">holiday</text>
+    <text x="228" y="344" class="c-pkg">VN national + overrides</text>
+    <text x="228" y="358" class="c-note">DEC-003</text>
+  </g>
+  <g>
+    <rect x="374" y="304" width="150" height="60" rx="8" class="c-box"/>
+    <text x="388" y="326" class="c-title">allowlist</text>
+    <text x="388" y="344" class="c-pkg">Jira project keys</text>
+    <text x="388" y="358" class="c-note">DEC-005</text>
+  </g>
+  <g>
+    <rect x="534" y="304" width="150" height="60" rx="8" class="c-box"/>
+    <text x="548" y="326" class="c-title">skill</text>
+    <text x="548" y="344" class="c-pkg">taxonomy L1 / L2</text>
+    <text x="548" y="358" class="c-note">DEC-007</text>
+  </g>
+  <g>
+    <rect x="694" y="304" width="180" height="60" rx="8" class="c-box"/>
+    <text x="708" y="326" class="c-title">lock-deadline flag</text>
+    <text x="708" y="344" class="c-pkg">Manager toggle in Hub</text>
+    <text x="708" y="358" class="c-note">DEC-010 criterion 3</text>
+  </g>
+  <g>
+    <rect x="884" y="304" width="290" height="60" rx="8" class="c-box"/>
+    <text x="898" y="326" class="c-title">materialized · refresher</text>
+    <text x="898" y="344" class="c-pkg">REFRESH CONCURRENTLY · 2 s debounce</text>
+    <text x="898" y="358" class="c-note">feeds heatmap &amp; overdue in ≤ 2.5 s</text>
+  </g>
+
+  <!-- Integration / async row -->
+  <g>
+    <rect x="24" y="412" width="220" height="100" rx="8" class="c-box outbound"/>
+    <text x="38" y="434" class="c-title">jira (adapter)</text>
+    <text x="38" y="450" class="c-pkg">JiraRestClient (v3)</text>
+    <text x="38" y="464" class="c-pkg">AdfBuilder</text>
+    <text x="38" y="478" class="c-pkg">rate-limit guard</text>
+    <text x="38" y="496" class="c-note">429 → exp backoff</text>
+    <text x="38" y="510" class="c-note">adaptive cadence (COND-04)</text>
+  </g>
+  <g>
+    <rect x="264" y="412" width="200" height="100" rx="8" class="c-box outbound"/>
+    <text x="278" y="434" class="c-title">jira.write</text>
+    <text x="278" y="450" class="c-pkg">JiraWriteClient</text>
+    <text x="278" y="466" class="c-note">PUT /assignee + POST /comment</text>
+    <text x="278" y="480" class="c-note">synchronous</text>
+    <text x="278" y="494" class="c-note">rollback on 403 (DEC-008)</text>
+    <text x="278" y="508" class="c-note">dry-run flag (PLAN-COND-01)</text>
+  </g>
+  <g>
+    <rect x="484" y="412" width="220" height="100" rx="8" class="c-box async"/>
+    <text x="498" y="434" class="c-title">sync.reconciler</text>
+    <text x="498" y="450" class="c-pkg">@Scheduled hourly</text>
+    <text x="498" y="466" class="c-pkg">ReconcilerConsumer</text>
+    <text x="498" y="480" class="c-note">JQL search per allow-listed</text>
+    <text x="498" y="496" class="c-note">publishes to jira.inbound.events</text>
+  </g>
+  <g>
+    <rect x="724" y="412" width="220" height="100" rx="8" class="c-box async"/>
+    <text x="738" y="434" class="c-title">sync.consumer</text>
+    <text x="738" y="450" class="c-pkg">JiraEventConsumer</text>
+    <text x="738" y="464" class="c-note">dedup (jira_event_id, type)</text>
+    <text x="738" y="478" class="c-note">UPSERT guard on jira_updated_at</text>
+    <text x="738" y="494" class="c-note">triggers MV refresh</text>
+    <text x="738" y="508" class="c-note">DLQ for poison events</text>
+  </g>
+  <g>
+    <rect x="964" y="412" width="210" height="100" rx="8" class="c-box async"/>
+    <text x="978" y="434" class="c-title">Kafka topics</text>
+    <text x="978" y="452" class="c-pkg">jira.inbound.events</text>
+    <text x="978" y="466" class="c-pkg">hub.domain.events</text>
+    <text x="978" y="480" class="c-pkg">hub.sync.commands</text>
+    <text x="978" y="494" class="c-pkg">hub.audit · hub.dlq</text>
+  </g>
+
+  <!-- Data stores -->
+  <g>
+    <rect x="24" y="572" width="560" height="56" rx="8" class="c-box data"/>
+    <text x="38" y="594" class="c-title" style="fill:#86efac">PostgreSQL — hub database</text>
+    <text x="38" y="612" class="c-pkg">core.* · jira.* · audit.* · mv.*  (Flyway V001…V006 forward-only)</text>
+  </g>
+  <g>
+    <rect x="604" y="572" width="570" height="56" rx="8" class="c-box data"/>
+    <text x="618" y="594" class="c-title" style="fill:#86efac">External SoR — Jira Cloud (projection kept in jira.* schema)</text>
+    <text x="618" y="612" class="c-pkg">issues · worklogs · statuses · resolutions · assignees · fixVersions · priorities · labels · dueDate</text>
+  </g>
+
+  <!-- Dependency arrows (coarse) -->
+  <path d="M 144 152 L 144 202" class="c-line" marker-end="url(#c-arr)"/>
+  <path d="M 394 152 L 394 202" class="c-line" marker-end="url(#c-arr)"/>
+  <path d="M 664 152 L 664 412" class="c-line" marker-end="url(#c-arr)"/>
+  <path d="M 974 292 L 974 412" class="c-line" marker-end="url(#c-arr)"/>
+  <path d="M 1134 292 L 1134 412" class="c-line" marker-end="url(#c-arr)"/>
+  <path d="M 300 364 L 300 412" class="c-line" marker-end="url(#c-arr)"/>
+  <!-- Data edges -->
+  <path d="M 300 512 L 300 572" class="c-line"/>
+  <path d="M 594 512 L 594 572" class="c-line"/>
+  <path d="M 1070 512 L 1070 572" class="c-line"/>
+
+</svg>
+    </div>
+    <div class="legend">
+      <span class="chip"><span class="sw" style="background:#f87171"></span>security</span>
+      <span class="chip"><span class="sw" style="background:#7aa2f7"></span>inbound (REST, webhook, UI)</span>
+      <span class="chip"><span class="sw" style="background:#a78bfa"></span>domain services</span>
+      <span class="chip"><span class="sw" style="background:#2684ff"></span>outbound to Jira</span>
+      <span class="chip"><span class="sw" style="background:#fbbf24"></span>async / scheduled</span>
+      <span class="chip"><span class="sw" style="background:#10b981"></span>data stores</span>
+    </div>
+    <footer>
+      Approved baselines in effect: REQ-001…009 · B-RULE-01…04 · BR-DEC-01…11 · ADR-ARCH-001…011 · TD-001…012 · PLAN-001…036 · 4 TD CONDs · 4 PLAN CONDs · 3 Dev checkpoints (CP-1/2/3).
+    </footer>
+  </section>
+
+</main>
+</body>
+</html>
