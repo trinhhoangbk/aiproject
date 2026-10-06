@@ -8,12 +8,14 @@ import java.time.LocalDate;
 import java.util.UUID;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Admin / Manager-only in M8. For M1 PLAN-010 we expose the endpoints without
  * a security filter; the Spring Security chain and @PreAuthorize annotations
  * come in M8 (PLAN-028/029).
  */
+@PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
 @RestController
 @RequestMapping("/api/capacity")
 public class CapacityController {

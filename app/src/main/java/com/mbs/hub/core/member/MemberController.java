@@ -13,11 +13,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Admin roster controller — REQ-008 wiring surface, no security filter yet.
  * Security annotations are added in M8 (PLAN-029).
  */
+@PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
 @RestController
 @RequestMapping("/api/roster")
 public class MemberController {

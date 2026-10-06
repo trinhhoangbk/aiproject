@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 /**
  * Admin / Operations Lead co-ownership per DEC-003. RBAC in M8.
  */
+@PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
 @RestController
 @RequestMapping("/api/holidays")
 public class HolidayController {

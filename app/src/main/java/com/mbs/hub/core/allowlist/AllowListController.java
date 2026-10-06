@@ -5,7 +5,9 @@ import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
+@PreAuthorize("hasAnyRole('ADMIN','MANAGER')")
 @RestController
 @RequestMapping("/api/allowlist")
 public class AllowListController {
