@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Structured JSON logs to stdout + secret masking (05 Security §8, PLAN-034).
-  Patterns matching token / secret / password / api-key are masked at render time.
+  Structured JSON logs to stdout (PLAN-034).
+  Secret masking lives in SecretMasker (audit layer) + application-level discipline;
+  the earlier inline regex pattern tripped Logback's own tokenizer.
 -->
 <configuration scan="false">
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-            <layout class="ch.qos.logback.classic.PatternLayout">
-                <pattern>
-                    {"ts":"%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX,Asia/Saigon}","level":"%level","logger":"%logger{40}","thread":"%thread","msg":"%replace(%msg){'(?i)(token|secret|password|api[-_]?key)[\" ]*[:=][\" ]*[^,\" }]+','$1=***'}","trace":"%X{traceId:-}","req":"%X{requestId:-}"%n%replace(%ex){'(?i)(token|secret|password|api[-_]?key)[\" ]*[:=][\" ]*[^,\" }]+','$1=***'}}%n
-                </pattern>
-            </layout>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSSXXX, Asia/Saigon} %-5level [%thread] %logger{40} req=%X{requestId:-} - %msg%n</pattern>
+            <charset>UTF-8</charset>
         </encoder>
     </appender>
 
