@@ -1,0 +1,83 @@
+// Multi-Project Workload & Resource Balancing Hub — Spring Boot 3.3 (Java 21 LTS)
+// Baselines in effect: BUSINESS APPROVED / CONTEXT APPROVED / ARCHITECTURE APPROVED /
+// TECHNICAL DESIGN APPROVED / PLAN APPROVED / JIRA READY.
+
+plugins {
+    java
+    id("org.springframework.boot") version "3.3.4"
+    id("io.spring.dependency-management") version "1.1.6"
+}
+
+group = "com.mbs"
+version = "0.1.0-SNAPSHOT"
+description = "Resource & Workload Hub"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
+}
+
+dependencies {
+    // --- Core Spring Boot stack (TD-001, D-LIB-01..13) ---
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-security")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.springframework.boot:spring-boot-starter-validation")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("org.springframework.kafka:spring-kafka")
+    implementation("org.flywaydb:flyway-core:10.17.0")
+    implementation("org.flywaydb:flyway-database-postgresql:10.17.0")
+    implementation("org.postgresql:postgresql")
+
+    // --- JSON (Jackson jsr310 for ADF date-time, calendar day in Asia/Saigon — TD-011) ---
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+
+    // --- Observability (TD §7, F-SEC-02) ---
+    implementation("io.micrometer:micrometer-registry-prometheus")
+
+    // --- Dev convenience ---
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
+
+    // --- Test (D-LIB-14..16) ---
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
+        exclude(group = "org.junit.vintage")
+    }
+    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.springframework.kafka:spring-kafka-test")
+    testImplementation("org.testcontainers:junit-jupiter:1.20.1")
+    testImplementation("org.testcontainers:postgresql:1.20.1")
+    testImplementation("org.testcontainers:kafka:1.20.1")
+    testImplementation("com.github.tomakehurst:wiremock-standalone:3.9.1")
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-parameters")
+    options.encoding = "UTF-8"
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    // Prove the Clock bean overrides host TZ (F-TD-01).
+    systemProperty("user.timezone", "UTC")
+    testLogging {
+        events("passed", "skipped", "failed")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+
+tasks.bootBuildImage {
+    imageName.set("com.mbs/hub:${project.version}")
+    environment.set(mapOf("BP_JVM_VERSION" to "21"))
+}
