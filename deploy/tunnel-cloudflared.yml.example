@@ -1,0 +1,27 @@
+# Example cloudflared config for the Hub.
+# Copy to deploy/tunnel-cloudflared.yml (chmod 600) and replace <your-named-tunnel-id>.
+#
+# COND-01 (TD): the public tunnel MUST expose ONLY /webhooks/jira.
+# The UI stays on http://127.0.0.1:8080 and is reached by the operator over SSH or local only.
+#
+# Reserve a named tunnel first:
+#   cloudflared tunnel login
+#   cloudflared tunnel create hub
+#   cloudflared tunnel route dns hub hub.<your-domain>
+
+tunnel: <your-named-tunnel-id>
+credentials-file: /etc/cloudflared/<your-named-tunnel-id>.json
+
+ingress:
+  # Only this one path is forwarded.
+  - hostname: hub.<your-domain>
+    path: /webhooks/jira(/.*)?
+    service: http://127.0.0.1:8080
+    originRequest:
+      noTLSVerify: true
+      connectTimeout: 10s
+      tlsTimeout: 10s
+      httpHostHeader: hub.local
+
+  # Catch-all: refuse everything else so /api/* and the SPA are NEVER reachable publicly.
+  - service: http_status:404

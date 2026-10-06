@@ -98,3 +98,54 @@ Audit: no recovery (best-effort by business decision, F-ARCH-NEW-02 Reading A).
 3. `docker compose restart hub` → verify `/actuator/health` UP.
 4. Revoke the old token in Atlassian.
 5. Record the rotation date in `deploy/token-rotation-log.md` and schedule the next (90 days ahead).
+
+---
+
+## Tunnel setup (PLAN-017 · TD-COND-01)
+
+**Golden rule: the public tunnel exposes ONLY `/webhooks/jira`. The UI must NEVER be
+reachable through the public URL.** Jira Cloud needs an HTTPS URL to deliver webhooks;
+the operator machine does not have a public IP, so a tunnel is required.
+
+Two supported vendors (operator picks one):
+
+### Cloudflare Tunnel (recommended — stable named domain, free)
+
+```bash
+# One-off setup (operator machine)
+brew install cloudflared                  # or: see https://developers.cloudflare.com/cloudflared/
+cloudflared tunnel login                   # opens browser; authorises your Cloudflare account
+cloudflared tunnel create hub              # creates a named tunnel; writes a credentials JSON
+cloudflared tunnel route dns hub hub.your-domain.example
+cp deploy/tunnel-cloudflared.yml.example deploy/tunnel-cloudflared.yml
+chmod 600 deploy/tunnel-cloudflared.yml    # fill tunnel id + credentials path
+
+# Start (keeps running; one terminal)
+cloudflared tunnel --config deploy/tunnel-cloudflared.yml run hub
+```
+
+The `ingress:` block in `deploy/tunnel-cloudflared.yml.example` forwards **only**
+`^/webhooks/jira(/.*)?` to the local Hub; every other path returns `404`. Verify before
+registering the webhook in Jira:
+
+```bash
+curl -i https://hub.your-domain.example/api/auth/me        # expect 404
+curl -i https://hub.your-domain.example/webhooks/jira      # expect 401 (missing signature)
+```
+
+### ngrok
+
+Works too, but on the free tier the full app is forwarded unless an Edge rule is
+configured in the ngrok dashboard. See `deploy/tunnel-ngrok.yml.example`.
+
+### Register the webhook in Jira UI (CP-1 step)
+
+1. Jira Cloud → **System → Webhooks → Create webhook**.
+2. URL: `https://<HUB_PUBLIC_URL>/webhooks/jira`.
+3. **Secret**: paste the value you set as `JIRA_WEBHOOK_SECRET` in `deploy/.env`.
+4. Events: `issue updated`, `worklog created`, `worklog updated`, `worklog deleted`.
+5. JQL filter: restrict to the allow-listed projects (DEC-005) — e.g.
+   `project in (PRJ-A, PRJ-B, CORE-SYS)`.
+6. Save.
+
+CP-1 is complete once this URL is live, HMAC verifies, and Jira's test-fire returns 200.

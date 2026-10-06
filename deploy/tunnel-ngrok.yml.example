@@ -1,0 +1,18 @@
+# Alternative: ngrok. Paid plan recommended for a stable domain.
+# COND-01: the agent config here forwards ONLY /webhooks/jira. The UI stays on localhost.
+#
+# Start with: ngrok start --all --config deploy/tunnel-ngrok.yml
+
+version: "3"
+agent:
+  authtoken: ${NGROK_AUTHTOKEN}
+tunnels:
+  hub-webhook:
+    proto: http
+    addr: 127.0.0.1:8080
+    domain: hub-webhook.<your-reserved-domain>.ngrok.app
+    # Path-whitelisting below is enforced via ngrok's Edge rules (not inline config in
+    # free tier). Operator MUST configure an Edge rule in the ngrok dashboard:
+    #    Rule: "if path matches ^/webhooks/jira then forward; else return 404"
+    # Without that Edge rule, the ngrok free tier exposes the whole app on this URL —
+    # which VIOLATES COND-01. Prefer cloudflared if the ngrok Edge is unavailable.
