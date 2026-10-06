@@ -8,13 +8,12 @@ import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.web.authentication.logout.LogoutSuccessEvent;
 import org.springframework.stereotype.Component;
 
 /**
- * PLAN-031 instrumentation — subscribes to Spring Security's events and persists
- * one audit row per auth outcome. Decoupled from SecurityConfig: no success/failure
- * handler changes needed.
+ * PLAN-031 — subscribes to Spring Security auth events. Writes one audit row per
+ * success/failure. Logout isn't event-based in Spring Security 6; it can be
+ * audited later via a LogoutHandler bean (nice-to-have).
  */
 @Component
 public class AuthAuditListener {
@@ -39,18 +38,6 @@ public class AuthAuditListener {
         payload.put("exception", e.getException().getClass().getSimpleName());
         audit.failed(null, "AUTH_LOGIN_FAIL", "credential",
                 String.valueOf(e.getAuthentication().getPrincipal()), payload);
-    }
-
-    @EventListener
-    public void onLogout(LogoutSuccessEvent e) {
-        UUID actor = e.getAuthentication() != null
-                ? memberIdOf(e.getAuthentication().getPrincipal())
-                : null;
-        Map<String, Object> payload = new HashMap<>();
-        payload.put("email", e.getAuthentication() != null
-                ? nameOf(e.getAuthentication().getPrincipal())
-                : null);
-        audit.ok(actor, "AUTH_LOGOUT", "member", String.valueOf(actor), payload);
     }
 
     private static UUID memberIdOf(Object principal) {
