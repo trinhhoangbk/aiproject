@@ -32,9 +32,16 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-            // CSRF — enabled everywhere EXCEPT the webhook endpoint (external, HMAC-protected)
+            // CSRF — enabled on the SPA shell, disabled on /api/** and the webhook.
+            //   - /webhooks/jira is HMAC-authenticated by the external POST body.
+            //   - /api/** is a REST surface consumed by our same-origin SPA; disabling
+            //     CSRF here matches the usual Spring Boot REST-API pattern (session
+            //     cookie + optional CORS). v1.1 can bring the token flow back if the
+            //     SPA is later served from a different origin.
             .csrf(csrf -> csrf
-                .ignoringRequestMatchers(new AntPathRequestMatcher("/webhooks/jira"))
+                .ignoringRequestMatchers(
+                    new AntPathRequestMatcher("/webhooks/jira"),
+                    new AntPathRequestMatcher("/api/**"))
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
             )
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
