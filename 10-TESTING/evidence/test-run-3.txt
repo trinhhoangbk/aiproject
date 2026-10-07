@@ -1,0 +1,169 @@
+> Task :compileJava
+> Task :processResources UP-TO-DATE
+> Task :classes
+> Task :compileTestJava
+> Task :processTestResources NO-SOURCE
+> Task :testClasses
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+
+> Task :test
+
+AssignmentServiceTest > TC_AS_03_jira403PropagatesIsAuditedFailedAndNoComment() PASSED
+
+AssignmentServiceTest > TC_AS_02_dryRunAssignmentIsAuditedOk() PASSED
+
+AssignmentServiceTest > TC_AS_04_commentFailureDoesNotUndoAssignment() PASSED
+
+AssignmentServiceTest > TC_AS_01_inactiveTargetRejectedBeforeJira() PASSED
+
+AssignmentServiceTest > TC_AS_05_commentUsesTheApprovedWording() PASSED
+
+OverdueCalculatorTest > TC_OD_02_tenDaysOverdueIsMoreThanAWeek() PASSED
+
+OverdueCalculatorTest > TC_OD_07_noWorkingDayLeftIsRed() PASSED
+
+OverdueCalculatorTest > TC_OD_04_rdcAboveSeventyPercentIsYellow() PASSED
+
+OverdueCalculatorTest > TC_OD_06_healthyIssueProducesNoRow() PASSED
+
+OverdueCalculatorTest > TC_OD_03_sevenDaysOverdueIsFourToSeven() PASSED
+
+OverdueCalculatorTest > TC_OD_08_undatedIssueIsIgnored() PASSED
+
+OverdueCalculatorTest > TC_OD_09_unestimatedOverdueIssueUsesHalfManDayPlaceholder() PASSED
+
+OverdueCalculatorTest > TC_OD_01_oneDayOverdue() PASSED
+
+OverdueCalculatorTest > TC_OD_05_rdcAboveOneIsRed() PASSED
+
+ApiSecurityWebTest > TC_SEC_06_memberDailyReportWithoutOwnIdIsForbidden() PASSED
+
+ApiSecurityWebTest > TC_AS_06_jiraRejectionIsReported422ProblemDetails() PASSED
+
+ApiSecurityWebTest > TC_SEC_01_memberSeesOwnWorkload() PASSED
+
+ApiSecurityWebTest > TC_SEC_02_memberCannotSeePeerWorkload() PASSED
+
+ApiSecurityWebTest > TC_SEC_04_memberCannotOpenRoster() PASSED
+
+ApiSecurityWebTest > TC_SEC_05_anonymousIsNotServed() PASSED
+
+ApiSecurityWebTest > TC_PL_03_pipelineWithoutNameIsRejected() PASSED
+
+ApiSecurityWebTest > TC_SEC_03_managerSeesAnyWorkload() PASSED
+
+SecretMaskerTest > TC_SM_02_authorizationHeaderMasked() PASSED
+
+SecretMaskerTest > TC_SM_01_secretJsonValuesMaskedOthersKept() PASSED
+
+BalancingServiceTest > TC_BL_01_skillAndCapacityFilteredCandidatesSortedByAvailability() PASSED
+
+ClockConfigTest > clockBeanOverridesHostTimezone() PASSED
+
+CapacityResolverTest > globalDefault_whenTeamHasNoOverride() PASSED
+
+CapacityResolverTest > memberOverrideBeatsTeamAndGlobal() PASSED
+
+CapacityResolverTest > teamOverrideBeatsGlobal_whenNoMemberOverride() PASSED
+
+CapacityResolverTest > globalDefault_whenNoOverrides() PASSED
+
+PipelineServiceTest > TC_PL_02_unknownSkillRejectedAndNothingSaved() PASSED
+
+PipelineServiceTest > TC_PL_01_createStoresDraftWithSkills() PASSED
+
+EtaServiceTest > TC_ETA_01_alphaHalf_fortyHours_tenWorkingDays() PASSED
+
+EtaServiceTest > TC_ETA_03_noObservedWorklogGivesNoDate() PASSED
+
+EtaServiceTest > TC_ETA_02_remainingReportedInHoursAndManDays() PASSED
+
+AdaptiveCadenceTest > decaysOnSuccess_toBaseline() PASSED
+
+AdaptiveCadenceTest > baselineAtStart() PASSED
+
+AdaptiveCadenceTest > doublesOn429_cappedAtMax() PASSED
+
+HmacVerifierTest > mismatchedSignatureRejected() PASSED
+
+HmacVerifierTest > validSignatureAccepted() PASSED
+
+HmacVerifierTest > nullHeaderRejected() PASSED
+
+JiraWriteClientTest > TC_JW_01_dryRunSendsNoHttpRequest() PASSED
+
+JiraWriteClientTest > TC_JW_02_assigneePutWithAccountId() PASSED
+
+JiraWriteClientTest > TC_JW_04_rateLimitHonoursRetryAfter() PASSED
+
+JiraWriteClientTest > TC_JW_03_forbiddenSurfacesAsClientExceptionWith403() PASSED
+
+AllocationBandTest > underSixty_isDarkGreen() PASSED
+
+AllocationBandTest > aboveHundred_isRed() PASSED
+
+AllocationBandTest > sixtyToEightyFive_isLightGreen() PASSED
+
+AllocationBandTest > aboveEightyFiveToHundred_isYellow() PASSED
+
+OverdueBandTest > oneToThree() PASSED
+
+OverdueBandTest > moreThanAWeek() PASSED
+
+OverdueBandTest > fourToSeven() PASSED
+
+TprBandTest > abovePointSevenUpToOne_isYellow() PASSED
+
+TprBandTest > belowOrEqualPointSeven_isNone() PASSED
+
+TprBandTest > aboveOne_isRed() PASSED
+
+TprBandTest > nullIsNone() PASSED
+
+AllocationRateCalculatorTest > TC_AR_02_overdueAndUndatedWorkIsStillCommitted() PASSED
+
+AllocationRateCalculatorTest > TC_AR_01_onlyWorkDueInsideTheWindowIsCommitted() PASSED
+
+AllocationRateCalculatorTest > TC_AR_03_unestimatedIssueCountsAsHalfManDay() PASSED
+
+AllocationRateCalculatorTest > TC_AR_05_zeroWorkingDaysDoesNotDivideByZero() PASSED
+
+AllocationRateCalculatorTest > TC_AR_04_overCapacityIsRed() PASSED
+
+WorkingDayCalculatorTest > companyDayExcluded() PASSED
+
+WorkingDayCalculatorTest > weekOfSevenDaysWithTwoWeekendDays_counts5() PASSED
+
+WorkingDayCalculatorTest > nationalHolidayExcluded() PASSED
+
+WorkingDayCalculatorTest > compensatedWorkdayCountsOnSaturday() PASSED
+
+DailyReportServiceTest > TC_DR_01_windowIsTheCalendarDayInAsiaSaigon() PASSED
+
+DailyReportServiceTest > TC_DR_04_worklogTotalsPerProjectInHours() PASSED
+
+DailyReportServiceTest > TC_DR_05_teamWideExcludesNonRosterWorklog() PASSED
+
+DailyReportServiceTest > TC_DR_02_discardedExcludedByDefault() PASSED
+
+DailyReportServiceTest > TC_DR_03_discardedShownAndFlaggedWhenNotExcluded() PASSED
+
+WorklogProjectorTest > TC_WP_02_missingPageYieldsNothing() PASSED
+
+WorklogProjectorTest > TC_WP_01_onlyAttributableValidEntriesAreMapped() PASSED
+
+WorkloadServiceOverloadTest > TC_WL_04_dayOverCapWithoutHardDeadlineIsNotOverload() PASSED
+
+WorkloadServiceOverloadTest > TC_WL_03_dayOverCapWithBlockerIsDayOverload() PASSED
+
+WorkloadServiceOverloadTest > TC_WL_05_hubLockFlagMakesDayOverload() PASSED
+
+WorkloadServiceOverloadTest > TC_WL_06_unestimatedMeansNoRemainingAndNoOriginal() PASSED
+
+WorkloadServiceOverloadTest > TC_WL_01_moreThanFortyHoursIsWeekOverload() PASSED
+
+WorkloadServiceOverloadTest > TC_WL_02_exactlyFortyHoursIsNotOverload() PASSED
+
+BUILD SUCCESSFUL in 8s
+4 actionable tasks: 3 executed, 1 up-to-date
+exit=0

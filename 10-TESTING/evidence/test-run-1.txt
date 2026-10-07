@@ -1,0 +1,24 @@
+> Task :compileJava
+> Task :processResources UP-TO-DATE
+> Task :classes
+> Task :compileTestJava FAILED
+> Task :processTestResources NO-SOURCE
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':compileTestJava'.
+> Could not resolve all files for configuration ':testCompileClasspath'.
+   > Could not find com.github.tomakehurst:wiremock-standalone:3.9.1.
+     Required by:
+         root project :
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 8s
+3 actionable tasks: 2 executed, 1 up-to-date
+exit=1

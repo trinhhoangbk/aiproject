@@ -1,0 +1,306 @@
+> Task :compileJava UP-TO-DATE
+> Task :processResources UP-TO-DATE
+> Task :classes UP-TO-DATE
+> Task :compileTestJava
+> Task :processTestResources NO-SOURCE
+> Task :testClasses
+OpenJDK 64-Bit Server VM warning: Sharing is only supported for boot loader classes because bootstrap classpath has been appended
+
+> Task :test
+
+AssignmentServiceTest > TC_AS_03_jira403PropagatesIsAuditedFailedAndNoComment() PASSED
+
+AssignmentServiceTest > TC_AS_02_dryRunAssignmentIsAuditedOk() PASSED
+
+AssignmentServiceTest > TC_AS_04_commentFailureDoesNotUndoAssignment() PASSED
+
+AssignmentServiceTest > TC_AS_01_inactiveTargetRejectedBeforeJira() PASSED
+
+AssignmentServiceTest > TC_AS_05_commentUsesTheApprovedWording() FAILED
+    java.lang.AssertionError: 
+    Expecting actual:
+      "{"version":1,"content":[{"type":"paragraph","content":[{"type":"text","text":"Hub assignment — requested by 406176b5-d1f6-440a-b06d-a726bd47e35a. Reason: Cân đối tải"}]}],"type":"doc"}"
+    to contain:
+      "Task reassigned via Resource Balancing Hub by Hoang Manager" 
+        at com.mbs.hub.assignment.AssignmentServiceTest.TC_AS_05_commentUsesTheApprovedWording(AssignmentServiceTest.java:121)
+
+SecretMaskerTest > TC_SM_02_authorizationHeaderMasked() PASSED
+
+SecretMaskerTest > TC_SM_01_secretJsonValuesMaskedOthersKept() PASSED
+
+BalancingServiceTest > TC_BL_01_skillAndCapacityFilteredCandidatesSortedByAvailability() PASSED
+
+ClockConfigTest > clockBeanOverridesHostTimezone() PASSED
+
+CapacityResolverTest > globalDefault_whenTeamHasNoOverride() PASSED
+
+CapacityResolverTest > memberOverrideBeatsTeamAndGlobal() PASSED
+
+CapacityResolverTest > teamOverrideBeatsGlobal_whenNoMemberOverride() PASSED
+
+CapacityResolverTest > globalDefault_whenNoOverrides() PASSED
+
+PipelineServiceTest > TC_PL_02_unknownSkillRejectedAndNothingSaved() PASSED
+
+PipelineServiceTest > TC_PL_01_createStoresDraftWithSkills() PASSED
+
+EtaServiceTest > TC_ETA_01_alphaHalf_fortyHours_tenWorkingDays() PASSED
+
+EtaServiceTest > TC_ETA_03_noObservedWorklogGivesNoDate() PASSED
+
+EtaServiceTest > TC_ETA_02_remainingReportedInHoursAndManDays() PASSED
+
+AdaptiveCadenceTest > decaysOnSuccess_toBaseline() PASSED
+
+AdaptiveCadenceTest > baselineAtStart() PASSED
+
+AdaptiveCadenceTest > doublesOn429_cappedAtMax() PASSED
+
+HmacVerifierTest > mismatchedSignatureRejected() PASSED
+
+HmacVerifierTest > validSignatureAccepted() PASSED
+
+HmacVerifierTest > nullHeaderRejected() PASSED
+
+JiraWriteClientTest > TC_JW_01_dryRunSendsNoHttpRequest() PASSED
+
+JiraWriteClientTest > TC_JW_02_assigneePutWithAccountId() PASSED
+
+JiraWriteClientTest > TC_JW_04_rateLimitHonoursRetryAfter() PASSED
+
+JiraWriteClientTest > TC_JW_03_forbiddenSurfacesAsClientExceptionWith403() PASSED
+
+AllocationBandTest > underSixty_isDarkGreen() PASSED
+
+AllocationBandTest > aboveHundred_isRed() PASSED
+
+AllocationBandTest > sixtyToEightyFive_isLightGreen() PASSED
+
+AllocationBandTest > aboveEightyFiveToHundred_isYellow() PASSED
+
+OverdueBandTest > oneToThree() PASSED
+
+OverdueBandTest > moreThanAWeek() PASSED
+
+OverdueBandTest > fourToSeven() PASSED
+
+TprBandTest > abovePointSevenUpToOne_isYellow() PASSED
+
+TprBandTest > belowOrEqualPointSeven_isNone() PASSED
+
+TprBandTest > aboveOne_isRed() PASSED
+
+TprBandTest > nullIsNone() PASSED
+
+AllocationRateCalculatorTest > TC_AR_02_overdueAndUndatedWorkIsStillCommitted() PASSED
+
+AllocationRateCalculatorTest > TC_AR_01_onlyWorkDueInsideTheWindowIsCommitted() PASSED
+
+AllocationRateCalculatorTest > TC_AR_03_unestimatedIssueCountsAsHalfManDay() PASSED
+
+AllocationRateCalculatorTest > TC_AR_05_zeroWorkingDaysDoesNotDivideByZero() PASSED
+
+AllocationRateCalculatorTest > TC_AR_04_overCapacityIsRed() PASSED
+
+OverdueCalculatorTest > TC_OD_02_tenDaysOverdueIsMoreThanAWeek() PASSED
+
+OverdueCalculatorTest > TC_OD_07_noWorkingDayLeftIsRed() PASSED
+
+OverdueCalculatorTest > TC_OD_04_rdcAboveSeventyPercentIsYellow() PASSED
+
+OverdueCalculatorTest > TC_OD_06_healthyIssueProducesNoRow() PASSED
+
+OverdueCalculatorTest > TC_OD_03_sevenDaysOverdueIsFourToSeven() PASSED
+
+OverdueCalculatorTest > TC_OD_08_undatedIssueIsIgnored() PASSED
+
+OverdueCalculatorTest > TC_OD_09_unestimatedOverdueIssueUsesHalfManDayPlaceholder() FAILED
+    org.opentest4j.AssertionFailedError: 
+    expected: 4.00
+     but was: 0
+        at java.base@21.0.12.1/jdk.internal.reflect.DirectConstructorHandleAccessor.newInstance(DirectConstructorHandleAccessor.java:62)
+        at java.base@21.0.12.1/java.lang.reflect.Constructor.newInstanceWithCaller(Constructor.java:502)
+        at app//com.mbs.hub.mv.calc.OverdueCalculatorTest.TC_OD_09_unestimatedOverdueIssueUsesHalfManDayPlaceholder(OverdueCalculatorTest.java:113)
+
+OverdueCalculatorTest > TC_OD_01_oneDayOverdue() PASSED
+
+OverdueCalculatorTest > TC_OD_05_rdcAboveOneIsRed() PASSED
+
+WorkingDayCalculatorTest > companyDayExcluded() PASSED
+
+WorkingDayCalculatorTest > weekOfSevenDaysWithTwoWeekendDays_counts5() PASSED
+
+WorkingDayCalculatorTest > nationalHolidayExcluded() PASSED
+
+WorkingDayCalculatorTest > compensatedWorkdayCountsOnSaturday() PASSED
+
+DailyReportServiceTest > TC_DR_01_windowIsTheCalendarDayInAsiaSaigon() PASSED
+
+DailyReportServiceTest > TC_DR_04_worklogTotalsPerProjectInHours() PASSED
+
+DailyReportServiceTest > TC_DR_05_teamWideExcludesNonRosterWorklog() PASSED
+
+DailyReportServiceTest > TC_DR_02_discardedExcludedByDefault() PASSED
+
+DailyReportServiceTest > TC_DR_03_discardedShownAndFlaggedWhenNotExcluded() PASSED
+
+WorklogProjectorTest > TC_WP_02_missingPageYieldsNothing() PASSED
+
+WorklogProjectorTest > TC_WP_01_onlyAttributableValidEntriesAreMapped() PASSED
+
+ApiSecurityWebTest > TC_SEC_06_memberDailyReportWithoutOwnIdIsForbidden() PASSED
+
+ApiSecurityWebTest > TC_AS_06_jiraRejectionIsReported422ProblemDetails() FAILED
+    jakarta.servlet.ServletException: Request processing failed: com.mbs.hub.jira.client.JiraClientException: Assignee not permitted by workflow
+        at app//org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1022)
+        at app//org.springframework.web.servlet.FrameworkServlet.doPost(FrameworkServlet.java:914)
+        at app//jakarta.servlet.http.HttpServlet.service(HttpServlet.java:590)
+        at app//org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:885)
+        at app//org.springframework.test.web.servlet.TestDispatcherServlet.service(TestDispatcherServlet.java:72)
+        at app//jakarta.servlet.http.HttpServlet.service(HttpServlet.java:658)
+        at app//org.springframework.mock.web.MockFilterChain$ServletFilterProxy.doFilter(MockFilterChain.java:165)
+        at app//org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:132)
+        at app//com.mbs.hub.config.RequestIdFilter.doFilterInternal(RequestIdFilter.java:35)
+        at app//org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+        at app//org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:151)
+        at app//org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:132)
+        at app//org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:108)
+        at app//org.springframework.security.web.FilterChainProxy.lambda$doFilterInternal$3(FilterChainProxy.java:231)
+        at app//org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:365)
+        at app//org.springframework.security.web.access.intercept.AuthorizationFilter.doFilter(AuthorizationFilter.java:100)
+        at app//org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+        at app//org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:126)
+        at app//org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:120)
+        at app//org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+        at app//org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:131)
+        at app//org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:85)
+        at app//org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+        at app//org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:100)
+        at app//org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+        at app//org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:179)
+        at app//org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+        at app//org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+        at app//org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+        at app//org.springframework.security.web.authentication.ui.DefaultLogoutPageGeneratingFilter.doFilterInternal(DefaultLogoutPageGeneratingFilter.java:58)
+        at app//org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+        at app//org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+        at app//org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter.doFilter(DefaultLoginPageGeneratingFilter.java:189)
+        at app//org.springframework.security.web.authentication.ui.DefaultLoginPageGeneratingFilter.doFilter(DefaultLoginPageGeneratingFilter.java:175)
+        at app//org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+        at app//org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:227)
+        at app//org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.doFilter(AbstractAuthenticationProcessingFilter.java:221)
+        at app//org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+        at app//org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:107)
+        at app//org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:93)
+        at app//org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+        at app//org.springframework.security.web.csrf.CsrfFilter.doFilterInternal(CsrfFilter.java:117)
+        at app//org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+        at app//org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+        at app//org.springframework.security.web.header.HeaderWriterFilter.doHeadersAfter(HeaderWriterFilter.java:90)
+        at app//org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:75)
+        at app//org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+        at app//org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+        at app//org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:82)
+        at app//org.springframework.security.web.context.SecurityContextHolderFilter.doFilter(SecurityContextHolderFilter.java:69)
+        at app//org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+        at app//org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:62)
+        at app//org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+        at app//org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+        at app//org.springframework.security.web.session.DisableEncodeUrlFilter.doFilterInternal(DisableEncodeUrlFilter.java:42)
+        at app//org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+        at app//org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:374)
+        at app//org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:233)
+        at app//org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:191)
+        at app//org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+        at app//org.springframework.web.servlet.handler.HandlerMappingIntrospector.lambda$createCacheFilter$3(HandlerMappingIntrospector.java:195)
+        at app//org.springframework.web.filter.CompositeFilter$VirtualFilterChain.doFilter(CompositeFilter.java:113)
+        at app//org.springframework.web.filter.CompositeFilter.doFilter(CompositeFilter.java:74)
+        at app//org.springframework.security.config.annotation.web.configuration.WebMvcSecurityConfiguration$CompositeFilterChainProxy.doFilter(WebMvcSecurityConfiguration.java:230)
+        at app//org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:352)
+        at app//org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:268)
+        at app//org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:151)
+        at app//org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:132)
+        at app//org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:100)
+        at app//org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+        at app//org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:151)
+        at app//org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:132)
+        at app//org.springframework.web.filter.FormContentFilter.doFilterInternal(FormContentFilter.java:93)
+        at app//org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+        at app//org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:151)
+        at app//org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:132)
+        at app//org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:201)
+        at app//org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:116)
+        at app//org.springframework.test.web.servlet.setup.MockMvcFilterDecorator.doFilter(MockMvcFilterDecorator.java:151)
+        at app//org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:132)
+        at app//org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:201)
+        at app//com.mbs.hub.web.ApiSecurityWebTest.TC_AS_06_jiraRejectionIsReported422ProblemDetails(ApiSecurityWebTest.java:121)
+
+        Caused by:
+        com.mbs.hub.jira.client.JiraClientException: Assignee not permitted by workflow
+            at app//com.mbs.hub.assignment.AssignmentService.assign(AssignmentService.java:64)
+            at app//com.mbs.hub.assignment.AssignmentController.assign(AssignmentController.java:31)
+            at java.base@21.0.12.1/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+            at java.base@21.0.12.1/java.lang.reflect.Method.invoke(Method.java:580)
+            at app//org.springframework.aop.support.AopUtils.invokeJoinpointUsingReflection(AopUtils.java:355)
+            at app//org.springframework.aop.framework.ReflectiveMethodInvocation.invokeJoinpoint(ReflectiveMethodInvocation.java:196)
+            at app//org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+            at app//org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:768)
+            at app//org.springframework.security.authorization.method.AuthorizationManagerBeforeMethodInterceptor.proceed(AuthorizationManagerBeforeMethodInterceptor.java:269)
+            at app//org.springframework.security.authorization.method.AuthorizationManagerBeforeMethodInterceptor.attemptAuthorization(AuthorizationManagerBeforeMethodInterceptor.java:264)
+            at app//org.springframework.security.authorization.method.AuthorizationManagerBeforeMethodInterceptor.invoke(AuthorizationManagerBeforeMethodInterceptor.java:197)
+            at app//org.springframework.security.config.annotation.method.configuration.DeferringMethodInterceptor.invoke(DeferringMethodInterceptor.java:44)
+            at app//org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:184)
+            at app//org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.proceed(CglibAopProxy.java:768)
+            at app//org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:720)
+            at app//com.mbs.hub.assignment.AssignmentController$$SpringCGLIB$$0.assign(<generated>)
+            at java.base@21.0.12.1/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+            at java.base@21.0.12.1/java.lang.reflect.Method.invoke(Method.java:580)
+            at app//org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:255)
+            at app//org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:188)
+            at app//org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:118)
+            at app//org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:926)
+            at app//org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:831)
+            at app//org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+            at app//org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1089)
+            at app//org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:979)
+            at app//org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:1014)
+            ... 81 more
+
+ApiSecurityWebTest > TC_SEC_01_memberSeesOwnWorkload() PASSED
+
+ApiSecurityWebTest > TC_SEC_02_memberCannotSeePeerWorkload() PASSED
+
+ApiSecurityWebTest > TC_SEC_04_memberCannotOpenRoster() PASSED
+
+ApiSecurityWebTest > TC_SEC_05_anonymousIsNotServed() PASSED
+
+ApiSecurityWebTest > TC_PL_03_pipelineWithoutNameIsRejected() PASSED
+
+ApiSecurityWebTest > TC_SEC_03_managerSeesAnyWorkload() PASSED
+
+WorkloadServiceOverloadTest > TC_WL_04_dayOverCapWithoutHardDeadlineIsNotOverload() PASSED
+
+WorkloadServiceOverloadTest > TC_WL_03_dayOverCapWithBlockerIsDayOverload() PASSED
+
+WorkloadServiceOverloadTest > TC_WL_05_hubLockFlagMakesDayOverload() PASSED
+
+WorkloadServiceOverloadTest > TC_WL_01_moreThanFortyHoursIsWeekOverload() PASSED
+
+WorkloadServiceOverloadTest > TC_WL_02_exactlyFortyHoursIsNotOverload() PASSED
+
+77 tests completed, 3 failed
+
+> Task :test FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':test'.
+> There were failing tests. See the report at: file:///Users/hoang/new%20project/app/build/reports/tests/test/index.html
+
+* Try:
+> Run with --scan to get full insights.
+
+BUILD FAILED in 20s
+4 actionable tasks: 2 executed, 2 up-to-date
+exit=1
