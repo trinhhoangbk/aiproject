@@ -96,6 +96,7 @@ public class WorkloadService {
         String band            = mvRow == null ? "dark_green" : mvRow.getBand();
 
         return new WorkloadView(memberId, m.getDisplayName(), windowParam, anchor,
+                winStart, horizon.windowEndExclusive(anchor).minusDays(1),
                 standardMd, committedMd, availableMd, ar, band,
                 overload, breakdown, unestimated);
     }

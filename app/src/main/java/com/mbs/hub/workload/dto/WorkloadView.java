@@ -10,6 +10,8 @@ public record WorkloadView(
         String memberName,
         String window,
         LocalDate anchor,
+        LocalDate windowStart,         // first day of the horizon (inclusive)
+        LocalDate windowEnd,           // last day of the horizon (inclusive)
         BigDecimal standardMd,
         BigDecimal committedMd,
         BigDecimal availableMd,
