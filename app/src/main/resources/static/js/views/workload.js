@@ -1,4 +1,5 @@
 import { escapeHtml } from "../app.js";
+import { memberPicker, bindMemberPicker } from "./_member.js";
 
 // Field names follow WorkloadView (02 API §5.2) exactly:
 // window, anchor, windowStart, windowEnd, standardMd, committedMd, availableMd,
@@ -23,10 +24,9 @@ export async function renderWorkload(root, ctx) {
   const win = params.get("window") || "week";
   const memberId = params.get("memberId") || me.memberId;
 
-  const isLead = me.role === "ADMIN" || me.role === "MANAGER";
-  const [wl, roster] = await Promise.all([
+  const [wl, picker] = await Promise.all([
     api.get(`/api/workload/${memberId}?window=${encodeURIComponent(win)}`),
-    isLead ? api.get("/api/roster").catch(_ => []) : Promise.resolve([]),
+    memberPicker(api, me, memberId),
   ]);
   const overloaded = wl.overload && wl.overload.flag === "red";
   const projects = wl.projects || [];
@@ -36,9 +36,7 @@ export async function renderWorkload(root, ctx) {
     <div class="filters">
       <label>Khoảng<select id="window">${["week","2weeks","month"]
         .map(w => `<option value="${w}" ${w===win?"selected":""}>${WINDOW_LABEL[w]}</option>`).join("")}</select></label>
-      ${isLead ? `<label>Thành viên<select id="memberId">${roster.map(m =>
-          `<option value="${escapeHtml(m.id)}" ${m.id === memberId ? "selected" : ""}>${escapeHtml(m.displayName)}</option>`
-        ).join("")}</select></label>` : ""}
+      ${picker}
       <button id="go">Xem</button>
     </div>
 
@@ -86,6 +84,7 @@ export async function renderWorkload(root, ctx) {
          (= ${fmt(un.count * Number(un.defaultEachMd))} MD)</p>
     </div>
   `;
+  bindMemberPicker(root);
 
   root.querySelector("#go").addEventListener("click", () => {
     const newWin = root.querySelector("#window").value;

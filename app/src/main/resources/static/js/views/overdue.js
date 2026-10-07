@@ -1,5 +1,5 @@
 import { escapeHtml } from "../app.js";
-import { memberPicker } from "./_member.js";
+import { memberPicker, bindMemberPicker } from "./_member.js";
 
 const OB_LABEL = { "1_to_3_days": "1–3 ngày", "4_to_7_days": "4–7 ngày", "more_than_a_week": ">1 tuần" };
 const TPR_LABEL = { yellow: "Cảnh báo (yellow)", red: "Nguy cấp (red)", none: "An toàn" };
@@ -51,6 +51,7 @@ export async function renderOverdue(root, { me, params, api }) {
         </table>` : `<p class="empty">Không có issue nào trong vùng cảnh báo.</p>`}
     </div>
   `;
+  bindMemberPicker(root);
 
   const go = root.querySelector("#go");
   if (go) go.addEventListener("click", () => {

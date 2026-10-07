@@ -1,5 +1,5 @@
 import { escapeHtml } from "../app.js";
-import { memberPicker } from "./_member.js";
+import { memberPicker, bindMemberPicker } from "./_member.js";
 
 export async function renderEta(root, { me, params, api }) {
   const memberId = params.get("memberId") || me.memberId;
@@ -40,6 +40,7 @@ export async function renderEta(root, { me, params, api }) {
         </table>` : `<p class="empty">Chưa có issue hoạt động nào gán cho thành viên này.</p>`}
     </div>
   `;
+  bindMemberPicker(root);
 
   const go = root.querySelector("#go");
   if (go) go.addEventListener("click", () => {

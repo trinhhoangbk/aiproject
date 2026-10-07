@@ -87,3 +87,7 @@ code { font-family: var(--mono); font-size: 12px; }
 
 .empty { color: var(--mut); padding: 10px 0; font-style: italic; }
 .pill { display: inline-block; padding: 2px 6px; border: 1px solid var(--line); border-radius: 4px; font-size: 11px; color: var(--mut); margin-left: 4px; }
+
+/* Member search (views/_member.js) */
+.filters input#memberSearch { min-width: 220px; }
+.filters .error { color: var(--red); font-size: 12px; }

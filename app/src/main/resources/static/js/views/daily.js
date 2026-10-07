@@ -1,5 +1,5 @@
 import { escapeHtml } from "../app.js";
-import { memberPicker } from "./_member.js";
+import { memberPicker, bindMemberPicker } from "./_member.js";
 
 export async function renderDaily(root, { me, params, api }) {
   // Today in Asia/Saigon (DEC-002), not UTC — before 07:00 ICT the UTC date is still yesterday.
@@ -55,6 +55,7 @@ export async function renderDaily(root, { me, params, api }) {
         </table>` : `<p class="empty">Không có worklog nào trong ngày này.</p>`}
     </div>
   `;
+  bindMemberPicker(root);
 
   root.querySelector("#go").addEventListener("click", () => {
     const d  = root.querySelector("#date").value;
