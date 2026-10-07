@@ -8,12 +8,12 @@ const WINDOWS = [
 
 /**
  * MANAGER/ADMIN heatmap — one cell per (member × horizon).
- * Reads every member via /api/members then /api/workload/{id}?window= for each,
+ * Reads every member via /api/roster then /api/workload/{id}?window= for each,
  * which is fine at 10–50 members (02 API §5.2).
  * When the dedicated /api/heatmap endpoint (M7+) lands, swap the loop for a single call.
  */
 export async function renderHeatmap(root, { api }) {
-  const members = await api.get("/api/members");
+  const members = await api.get("/api/roster");
   if (!members.length) {
     root.innerHTML = `<div class="card"><h1>Heatmap</h1><p class="empty">Chưa có member nào trong roster.</p></div>`;
     return;

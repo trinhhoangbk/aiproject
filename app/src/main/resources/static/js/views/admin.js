@@ -6,7 +6,7 @@ import { escapeHtml } from "../app.js";
  */
 export async function renderAdmin(root, { api }) {
   const [members, audits] = await Promise.all([
-    api.get("/api/members"),
+    api.get("/api/roster"),
     api.get("/api/audit?limit=25").catch(_ => []),
   ]);
 
