@@ -73,8 +73,14 @@ public class DailyReportService {
                 ? worklogs.findByJiraAccountIdAndStartedAtBetween(accountId, from, toExclusive)
                 : worklogs.findByStartedAtBetween(from, toExclusive);
 
+        // O-11: non-roster worklog is excluded from team totals. Roster membership is
+        // checked now, not via the flag stored at ingest time, so members added after
+        // their worklogs were synced are still counted.
+        Set<String> roster = accountId != null ? Set.of(accountId)
+                : members.findAll().stream().map(Member::getJiraAccountId)
+                         .filter(Objects::nonNull).collect(Collectors.toSet());
         Map<String, Long> byProject = ws.stream()
-                .filter(WorklogProjection::isInRoster)
+                .filter(w -> roster.contains(w.getJiraAccountId()))
                 .collect(Collectors.groupingBy(
                         WorklogProjection::getProjectKey,
                         Collectors.summingLong(WorklogProjection::getDurationSeconds)));

@@ -50,6 +50,7 @@ public class JiraEventConsumer {
     private final IssueProjectionRepository issues;
     private final AllowListRepository allowList;
     private final ApplicationEventPublisher events;
+    private final WorklogProjector worklogProjector;
     private final Counter processed;
     private final Counter dedupHits;
     private final Counter stale;
@@ -59,7 +60,9 @@ public class JiraEventConsumer {
                              IssueProjectionRepository issues,
                              AllowListRepository allowList,
                              ApplicationEventPublisher events,
+                             WorklogProjector worklogProjector,
                              MeterRegistry metrics) {
+        this.worklogProjector = worklogProjector;
         this.mapper = mapper;
         this.dedup = dedup;
         this.issues = issues;
@@ -83,6 +86,7 @@ public class JiraEventConsumer {
             JiraIssue issue = mapper.extractIssue(env.payloadJson());
             int rows = applyUpsert(issue);
             if (rows > 0) {
+                worklogProjector.project(issue);   // AC-002.2 / AC-004.2
                 events.publishEvent(new ProjectionUpdatedEvent(issue.key(), issue.projectKey()));
             } else {
                 stale.increment();

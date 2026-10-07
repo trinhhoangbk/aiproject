@@ -20,12 +20,11 @@ public interface WorklogProjectionRepository extends JpaRepository<WorklogProjec
     /** ETA α: last-10-WD worklog of this Jira account, grouped by project. */
     @Query(value = """
         SELECT w.project_key AS projectKey,
-               SUM(w.duration_seconds)::bigint AS seconds
+               CAST(SUM(w.duration_seconds) AS bigint) AS seconds
         FROM jira.worklog_projection w
         WHERE w.jira_account_id = :accountId
           AND w.started_at >= :from
           AND w.started_at <  :toExclusive
-          AND w.in_roster  = true
         GROUP BY w.project_key
         """, nativeQuery = true)
     List<Object[]> sumByProjectBetween(
