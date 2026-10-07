@@ -32,7 +32,7 @@ New classes use `@MockitoSettings(strictness = LENIENT)` so a shared `@BeforeEac
 | `sync/consumer/WorklogProjectorTest.java` | TC-WP-01…02 |
 | `web/ApiSecurityWebTest.java` | TC-SEC-01…06, TC-PL-03, TC-AS-06 |
 
-Total new: **12 test classes, 48 test methods**; existing: 8 classes, unchanged.
+Total new: **12 test classes, 51 test methods** (one per catalog case); existing: 8 classes, unchanged.
 
 ## 3. Test-ID mapping notes
 
