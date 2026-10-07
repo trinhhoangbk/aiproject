@@ -85,11 +85,11 @@ else
   # Pick a safe project key for the smoke. Operator can override via env.
   SMOKE_PROJECT="${SMOKE_PROJECT:-DEMO}"
   CREATE=$(curl -sS -b "$COOKIE" -c "$COOKIE" -o /tmp/_al.json -w '%{http_code}' \
-      -X POST "$HUB_URL/api/allowlist" \
+      -X PUT "$HUB_URL/api/allowlist/$SMOKE_PROJECT" \
       -H 'Content-Type: application/json' \
       -d "{\"projectKey\":\"$SMOKE_PROJECT\",\"enabled\":true}")
-  if [[ "$CREATE" =~ ^20[01]$ || "$CREATE" == "409" ]]; then
-    pass "allow-list upsert returned $CREATE (OK — 409 means it was already present)"
+  if [[ "$CREATE" =~ ^20[01]$ ]]; then
+    pass "allow-list PUT returned $CREATE"
   else
     fail "allow-list POST HTTP $CREATE — body: $(cat /tmp/_al.json 2>/dev/null)"
   fi
@@ -146,11 +146,13 @@ hdr "PS-06  Webhook event metric"
 # Here we only verify the counter is registered and reachable.
 if [[ -n "$ADMIN_EMAIL" ]]; then
   P=$(curl -sS -b "$COOKIE" "$HUB_URL/actuator/prometheus" || true)
+  # Micrometer-registry-prometheus may render a counter named foo_total as
+  # either foo_total or foo_total_total depending on version. Match either.
   for M in jira_events_processed_total jira_webhook_signature_failed_total mv_refresh_total audit_writes_total; do
-    if echo "$P" | grep -q "^# TYPE $M\|^$M"; then
-      V=$(echo "$P" | awk -v m="$M" '$1 == m {print $2; exit}')
-      [[ -z "$V" ]] && V="0"
-      pass "$M present (current=$V)"
+    LINE=$(printf '%s\n' "$P" | awk -v m="$M" '$1 == m || $1 == m"_total" {print; exit}')
+    if [[ -n "$LINE" ]]; then
+      V=$(printf '%s' "$LINE" | awk '{print $2}')
+      pass "$M present (current=${V:-0})"
     else
       fail "$M MISSING from /actuator/prometheus"
     fi
