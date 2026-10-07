@@ -6,7 +6,7 @@
 | Role | QA Lead / Test Evidence Reviewer (AI — recommends; QA authority decides) |
 | Frozen candidate | **`ca8db44`** (`main`) |
 | Evidence | `10-TESTING/evidence/test-run-1.txt`, `-2.txt`, `-3.txt` on the operator host · `04`/`05` results |
-| **Status** | **🟡 `READY FOR TEST EVIDENCE APPROVAL`** — with the open conditions in §5 |
+| **Status** | **🟡 `READY FOR TEST EVIDENCE APPROVAL`** → **✅ `TEST EVIDENCE VERIFIED`** by the operator 2026-10-07 15:53 (see `TEST_EVIDENCE_APPROVAL_RECORD.md`) |
 
 ## 1. Evidence belongs to the frozen candidate
 

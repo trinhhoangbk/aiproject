@@ -105,3 +105,11 @@ Per the gate rule, Testing may start only after a human accepts these conditions
 ```
 DIFF CONDITIONS ACCEPTED — BD-01 <accept|revert>, BD-02 <accept|revert>, BD-03 accept, BD-04 <accept|clarify>
 ```
+
+---
+## 8. Human disposition (2026-10-07 15:53 ICT)
+
+```
+DIFF CONDITIONS ACCEPTED — BD-01 accept, BD-02 accept, BD-03 accept, BD-04 accept
+```
+Recorded in `10-TESTING/TEST_EVIDENCE_APPROVAL_RECORD.md`. DV-C1 closed by 10-TESTING run 3 (78/78). DV-C2 (tarball) and DV-C3 (tunnel) remain open.
