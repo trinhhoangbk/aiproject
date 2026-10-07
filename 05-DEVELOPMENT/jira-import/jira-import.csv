@@ -1,0 +1,391 @@
+Issue Id,Parent,Issue Type,Summary,Epic Name,Description,Priority,Status,Labels,Labels,Labels,Labels,Blocks,Blocks,Blocks,Blocks,Blocks,Blocks,Blocks
+1,,Epic,Foundation — scaffold + core governance schema,Foundation — scaffold + core governance schema,"Outcome: A buildable Spring Boot app on dev host with a working core database (`core.*`) governing roster, capacity (3-tier), holidays, allow-list, skills and pipeline.
+
+Requirements: REQ-008 (part)
+PLAN steps: PLAN-001 … PLAN-010
+
+Local id: EPIC-TMP-01 (04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §3)",,Done,v1.0,area-foundation,epic,,,,,,,,
+2,,Epic,Jira Sync Integration,Jira Sync Integration,"Outcome: Hub ingests Jira state via webhook (fast path) + hourly reconcile (safety net); projection + materialized views keep p99 ≤ 5 min and dashboard ≤ 2.5 s.
+
+Requirements: REQ-007, REQ-009
+PLAN steps: PLAN-011 … PLAN-019 (+ CP-1)
+
+Local id: EPIC-TMP-02 (04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §3)",,In Progress,v1.0,area-sync,epic,,,,,,,,
+3,,Epic,Workload & Overdue Views,Workload & Overdue Views,"Outcome: Member-centric workload / overload / overdue / early-warning / ETA / daily report are observable through the Hub API.
+
+Requirements: REQ-001, REQ-002, REQ-003, REQ-004
+PLAN steps: PLAN-020 … PLAN-023
+
+Local id: EPIC-TMP-03 (04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §3)",,Done,v1.0,area-views,epic,,,,,,,,
+4,,Epic,Pipeline & Resource Balancing,Pipeline & Resource Balancing,"Outcome: Managers maintain queued projects, see a heatmap, get member suggestions, perform safe Assign/Re-assign with audit.
+
+Requirements: REQ-005, REQ-006
+PLAN steps: PLAN-024 … PLAN-027
+
+Local id: EPIC-TMP-04 (04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §3)",,In Progress,v1.0,area-pipeline,epic,,,,,,,,
+5,,Epic,Security & Audit,Security & Audit,"Outcome: Spring Security filter chain, BCrypt-12 login, RBAC in depth, append-only audit, bootstrap admin.
+
+Requirements: REQ-008 (completion)
+PLAN steps: PLAN-028 … PLAN-031
+
+Local id: EPIC-TMP-05 (04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §3)",,Done,v1.0,area-security,epic,,,,,,,,
+6,,Epic,User Interface (SPA),User Interface (SPA),"Outcome: Pre-built static SPA in Vietnamese for Admin/Manager/Member screens; no Node in Hub Docker image.
+
+Requirements: REQ-001…006, REQ-008 (UI side)
+PLAN steps: PLAN-032, PLAN-033
+
+Local id: EPIC-TMP-06 (04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §3)",,Done,v1.0,area-ui,epic,,,,,,,,
+7,,Epic,Observability & Release Readiness,Observability & Release Readiness,"Outcome: Metrics, structured logs, runbook, dev-host smoke tests; dev-host exit for v1.0.
+
+Requirements: REQ-009 (observability), + CPs
+PLAN steps: PLAN-034 … PLAN-036 (+ CP-2, CP-3)
+
+Local id: EPIC-TMP-07 (04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §3)",,In Progress,v1.0,area-ops,epic,,,,,,,,
+101,1,Task,[PLAN-001] Scaffold Gradle Spring Boot app,,"Local id: JIRA-TMP-001
+PLAN step: PLAN-001
+Requirements / AC / decisions: —
+Risk: L
+Blocked by: —
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Low,Done,v1.0,area-foundation,plan-001,risk-l,102,103,111,112,,,
+102,1,Task,[PLAN-002] Docker Compose for Postgres+Kafka+Hub,,"Local id: JIRA-TMP-002
+PLAN step: PLAN-002
+Requirements / AC / decisions: —
+Risk: L
+Blocked by: JIRA-TMP-001
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Low,Done,v1.0,area-foundation,plan-002,risk-l,104,113,,,,,
+103,1,Task,[PLAN-003] Clock bean fixed to Asia/Saigon,,"Local id: JIRA-TMP-003
+PLAN step: PLAN-003
+Requirements / AC / decisions: DEC-002
+Risk: L
+Blocked by: JIRA-TMP-001
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Low,Done,v1.0,area-foundation,plan-003,risk-l,,,,,,,
+104,1,Task,[PLAN-004] Flyway V001 `core_schema` (incl. `password_hash` for TD-COND-02),,"Local id: JIRA-TMP-004
+PLAN step: PLAN-004
+Requirements / AC / decisions: REQ-008
+Risk: M
+Blocked by: JIRA-TMP-002
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-foundation,plan-004,risk-m,105,106,107,108,109,128,130
+105,1,Task,[PLAN-005] Flyway V002 `jira_schema`,,"Local id: JIRA-TMP-005
+PLAN step: PLAN-005
+Requirements / AC / decisions: REQ-007
+Risk: L
+Blocked by: JIRA-TMP-004
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Low,Done,v1.0,area-foundation,plan-005,risk-l,107,115,122,123,,,
+106,1,Task,[PLAN-006] Flyway V003 `audit_schema` with append-only grants,,"Local id: JIRA-TMP-006
+PLAN step: PLAN-006
+Requirements / AC / decisions: DEC-008
+Risk: M
+Blocked by: JIRA-TMP-004
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-foundation,plan-006,risk-m,127,131,,,,,
+107,1,Task,[PLAN-007] Flyway V004 materialized views + unique indexes,,"Local id: JIRA-TMP-007
+PLAN step: PLAN-007
+Requirements / AC / decisions: REQ-009, DEC-011
+Risk: M
+Blocked by: JIRA-TMP-004, JIRA-TMP-005
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-foundation,plan-007,risk-m,118,,,,,,
+108,1,Task,[PLAN-008] Flyway V005 seed VN holidays,,"Local id: JIRA-TMP-008
+PLAN step: PLAN-008
+Requirements / AC / decisions: DEC-003
+Risk: L
+Blocked by: JIRA-TMP-004
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Low,Done,v1.0,area-foundation,plan-008,risk-l,,,,,,,
+109,1,Task,[PLAN-009] Repositories + `CapacityResolver` (3-tier),,"Local id: JIRA-TMP-009
+PLAN step: PLAN-009
+Requirements / AC / decisions: DEC-004
+Risk: L
+Blocked by: JIRA-TMP-004
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Low,Done,v1.0,area-foundation,plan-009,risk-l,110,120,,,,,
+110,1,Story,[PLAN-010] Admin CRUD screens for roster/capacity/holiday/allow-list/skills via `/api/*`,,"Local id: JIRA-TMP-010
+PLAN step: PLAN-010
+Requirements / AC / decisions: DEC-003/004/005/006/007
+Risk: M
+Blocked by: JIRA-TMP-009
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-foundation,plan-010,risk-m,124,132,,,,,
+111,2,Task,[PLAN-011] Jira REST client (search/issue/worklog) with API Token auth,,"Local id: JIRA-TMP-011
+PLAN step: PLAN-011
+Requirements / AC / decisions: REQ-007, ADR-ARCH-010
+Risk: M
+Blocked by: JIRA-TMP-001
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-sync,plan-011,risk-m,116,126,134,,,,
+112,2,Task,[PLAN-012] Jira webhook controller + HMAC verifier,,"Local id: JIRA-TMP-012
+PLAN step: PLAN-012
+Requirements / AC / decisions: AC-007.1, T-01
+Risk: M
+Blocked by: JIRA-TMP-001
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-sync,plan-012,risk-m,114,117,,,,,
+113,2,Task,[PLAN-013] Kafka wiring (4 topics + DLQ),,"Local id: JIRA-TMP-013
+PLAN step: PLAN-013
+Requirements / AC / decisions: ADR-ARCH-004
+Risk: L
+Blocked by: JIRA-TMP-002
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Low,Done,v1.0,area-sync,plan-013,risk-l,114,115,116,,,,
+114,2,Task,[PLAN-014] Webhook→Kafka wiring,,"Local id: JIRA-TMP-014
+PLAN step: PLAN-014
+Requirements / AC / decisions: AC-007.1
+Risk: L
+Blocked by: JIRA-TMP-012, JIRA-TMP-013
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Low,Done,v1.0,area-sync,plan-014,risk-l,115,,,,,,
+115,2,Task,[PLAN-015] Jira event consumer: dedup + UPSERT monotonic guard,,"Local id: JIRA-TMP-015
+PLAN step: PLAN-015
+Requirements / AC / decisions: AC-007.1/3, F-DB-01
+Risk: M
+Blocked by: JIRA-TMP-005, JIRA-TMP-013, JIRA-TMP-014
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-sync,plan-015,risk-m,118,121,122,134,,,
+116,2,Task,[PLAN-016] Jira reconciler `@Scheduled` hourly + adaptive cadence on 429 (COND-04),,"Local id: JIRA-TMP-016
+PLAN step: PLAN-016
+Requirements / AC / decisions: AC-007.2, F-INT-02
+Risk: M
+Blocked by: JIRA-TMP-011, JIRA-TMP-013
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-sync,plan-016,risk-m,134,302,,,,,
+117,2,Task,[PLAN-017] Tunnel configuration documented; exposes only `/webhooks/jira` (TD-COND-01),,"Local id: JIRA-TMP-017
+PLAN step: PLAN-017
+Requirements / AC / decisions: COND-01, SEC-R-01
+Risk: H
+Blocked by: JIRA-TMP-012
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",High,Done,v1.0,area-sync,plan-017,risk-h,201,135,301,,,,
+201,2,Task,Checkpoint CP-1 — operator confirms Jira service account + API Token + webhook on allow-list only + non-production site,,"HUMAN CHECKPOINT — operator/approver task, not a developer task.
+
+Local id: JIRA-TMP-CP1
+PLAN step: —
+Requirements / AC / decisions: precondition for 018+
+Risk: H
+Blocked by: JIRA-TMP-017
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",High,In Progress,v1.0,area-sync,checkpoint,risk-h,126,,,,,,
+118,2,Task,[PLAN-018] Materialized-view refresher + 2 s debounce,,"Local id: JIRA-TMP-018
+PLAN step: PLAN-018
+Requirements / AC / decisions: REQ-009, AC-003.3
+Risk: M
+Blocked by: JIRA-TMP-007, JIRA-TMP-015
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-sync,plan-018,risk-m,119,120,121,,,,
+119,2,Task,[PLAN-019] Nightly MV full-rebuild job,,"Local id: JIRA-TMP-019
+PLAN step: PLAN-019
+Requirements / AC / decisions: REQ-009
+Risk: L
+Blocked by: JIRA-TMP-018
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Low,Done,v1.0,area-sync,plan-019,risk-l,,,,,,,
+120,3,Story,[PLAN-020] `WorkloadService` + `/api/workload/{memberId}` + `/overload`,,"Local id: JIRA-TMP-020
+PLAN step: PLAN-020
+Requirements / AC / decisions: AC-001.1…1.5
+Risk: M
+Blocked by: JIRA-TMP-009, JIRA-TMP-018
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-views,plan-020,risk-m,125,129,132,136,,,
+121,3,Story,[PLAN-021] `OverdueService` + `EarlyWarningService` (TPR DEC-009) + `/api/overdue*`,,"Local id: JIRA-TMP-021
+PLAN step: PLAN-021
+Requirements / AC / decisions: AC-003.1…3.5
+Risk: M
+Blocked by: JIRA-TMP-015, JIRA-TMP-018
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-views,plan-021,risk-m,129,132,136,,,,
+122,3,Story,[PLAN-022] `DailyReportService` + `/api/reporting/daily`,,"Local id: JIRA-TMP-022
+PLAN step: PLAN-022
+Requirements / AC / decisions: AC-002.1…2.4
+Risk: M
+Blocked by: JIRA-TMP-005, JIRA-TMP-015
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-views,plan-022,risk-m,129,132,136,,,,
+123,3,Story,[PLAN-023] `EtaService` with α over last 10 WD + `/api/eta/*`,,"Local id: JIRA-TMP-023
+PLAN step: PLAN-023
+Requirements / AC / decisions: AC-004.1/2
+Risk: M
+Blocked by: JIRA-TMP-005
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-views,plan-023,risk-m,,,,,,,
+124,4,Story,[PLAN-024] `PipelineService` + `/api/pipeline` CRUD (skills from DEC-007 taxonomy),,"Local id: JIRA-TMP-024
+PLAN step: PLAN-024
+Requirements / AC / decisions: AC-005.1/2
+Risk: M
+Blocked by: JIRA-TMP-010
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-pipeline,plan-024,risk-m,125,129,132,136,,,
+125,4,Story,[PLAN-025] `BalancingService` + `/api/heatmap` + `/api/balancing/suggest`,,"Local id: JIRA-TMP-025
+PLAN step: PLAN-025
+Requirements / AC / decisions: AC-006.1/2/3
+Risk: M
+Blocked by: JIRA-TMP-020, JIRA-TMP-024
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-pipeline,plan-025,risk-m,127,129,132,136,,,
+126,4,Task,[PLAN-026] `JiraWriteClient` (assignee + ADF comment) + 403 rollback + `JIRA_WRITE_DRY_RUN` flag honoured (PLAN-COND-01),,"Local id: JIRA-TMP-026
+PLAN step: PLAN-026
+Requirements / AC / decisions: AC-006.4/5, DEC-008
+Risk: H
+Blocked by: JIRA-TMP-011, JIRA-TMP-CP1
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",High,Done,v1.0,area-pipeline,plan-026,risk-h,127,134,,,,,
+127,4,Story,[PLAN-027] `AssignmentService` + `POST /api/assignments` + audit emission,,"Local id: JIRA-TMP-027
+PLAN step: PLAN-027
+Requirements / AC / decisions: AC-006.4/5/6
+Risk: H
+Blocked by: JIRA-TMP-006, JIRA-TMP-025, JIRA-TMP-026
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",High,Done,v1.0,area-pipeline,plan-027,risk-h,129,131,132,136,,,
+128,5,Task,"[PLAN-028] Spring Security config (form login, BCrypt-12, session, CSRF, CORS)",,"Local id: JIRA-TMP-028
+PLAN step: PLAN-028
+Requirements / AC / decisions: REQ-008, SV-02…09
+Risk: M
+Blocked by: JIRA-TMP-004
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-security,plan-028,risk-m,129,130,,,,,
+129,5,Task,[PLAN-029] `@PreAuthorize` on every controller + MEMBER data-level filter,,"Local id: JIRA-TMP-029
+PLAN step: PLAN-029
+Requirements / AC / decisions: AC-008.1/2/3, T-03/04/08
+Risk: M
+Blocked by: JIRA-TMP-020, JIRA-TMP-021, JIRA-TMP-022, JIRA-TMP-024, JIRA-TMP-025, JIRA-TMP-027, JIRA-TMP-028
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-security,plan-029,risk-m,131,132,136,,,,
+130,5,Task,[PLAN-030] Bootstrap-admin runner + V006 + runbook clears scrollback (PLAN-COND-04),,"Local id: JIRA-TMP-030
+PLAN step: PLAN-030
+Requirements / AC / decisions: REQ-008, TD-012, F-PLN-03
+Risk: M
+Blocked by: JIRA-TMP-004, JIRA-TMP-028
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-security,plan-030,risk-m,135,,,,,,
+131,5,Task,[PLAN-031] `AuditService` + instrumentation on every mutation,,"Local id: JIRA-TMP-031
+PLAN step: PLAN-031
+Requirements / AC / decisions: DEC-008, AC-006.6
+Risk: M
+Blocked by: JIRA-TMP-006, JIRA-TMP-027, JIRA-TMP-029
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-security,plan-031,risk-m,136,,,,,,
+132,6,Task,"[PLAN-032] SPA scaffold under `static/`; pre-built, no Node in Dockerfile (PLAN-COND-02)",,"Local id: JIRA-TMP-032
+PLAN step: PLAN-032
+Requirements / AC / decisions: REQ-001…006, 008, F-PLN-01
+Risk: M
+Blocked by: JIRA-TMP-010, JIRA-TMP-020, JIRA-TMP-021, JIRA-TMP-022, JIRA-TMP-024, JIRA-TMP-025, JIRA-TMP-027, JIRA-TMP-029
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-ui,plan-032,risk-m,133,,,,,,
+133,6,Story,"[PLAN-033] SPA screens (workload, daily, overdue, heatmap, pipeline, assign, admin, login) — Vietnamese UI",,"Local id: JIRA-TMP-033
+PLAN step: PLAN-033
+Requirements / AC / decisions: REQ-001…008 UI side; DEC-016
+Risk: M
+Blocked by: JIRA-TMP-032
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-ui,plan-033,risk-m,,,,,,,
+134,7,Task,[PLAN-034] Micrometer metrics + logback JSON + secret masking,,"Local id: JIRA-TMP-034
+PLAN step: PLAN-034
+Requirements / AC / decisions: TD §7, F-SEC-02
+Risk: L
+Blocked by: JIRA-TMP-011, JIRA-TMP-015, JIRA-TMP-016, JIRA-TMP-026
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Low,Done,v1.0,area-ops,plan-034,risk-l,202,,,,,,
+202,7,Task,Checkpoint CP-2 — metrics & logs sanity review,,"HUMAN CHECKPOINT — operator/approver task, not a developer task.
+
+Local id: JIRA-TMP-CP2
+PLAN step: —
+Requirements / AC / decisions: post-PLAN-034
+Risk: M
+Blocked by: JIRA-TMP-034
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,In Progress,v1.0,area-ops,checkpoint,risk-m,203,,,,,,
+135,7,Task,"[PLAN-035] `docs/runbook.md`: start/stop, tunnel, Jira API-Token 90-day rotation (COND-03), `pg_dump` PRE-00, `scripts/check-no-playbook-drift.sh` authoring (PLAN-COND-03)",,"Local id: JIRA-TMP-035
+PLAN step: PLAN-035
+Requirements / AC / decisions: COND-03, F-PLN-SEC-01, F-PLN-DEP-02
+Risk: M
+Blocked by: JIRA-TMP-017, JIRA-TMP-030
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,Done,v1.0,area-ops,plan-035,risk-m,303,,,,,,
+136,7,Task,[PLAN-036] E2E smoke tests on dev host (Testcontainers + WireMock),,"Local id: JIRA-TMP-036
+PLAN step: PLAN-036
+Requirements / AC / decisions: AC-001.1, AC-002.1, AC-003.4, AC-006.4/5, AC-007.1/2
+Risk: M
+Blocked by: JIRA-TMP-020, JIRA-TMP-021, JIRA-TMP-022, JIRA-TMP-024, JIRA-TMP-025, JIRA-TMP-027, JIRA-TMP-029, JIRA-TMP-031
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,To Do,v1.0,area-ops,plan-036,risk-m,203,,,,,,
+203,7,Task,Checkpoint CP-3 — final sign-off (= v1.0 Development exit),,"HUMAN CHECKPOINT — operator/approver task, not a developer task.
+
+Local id: JIRA-TMP-CP3
+PLAN step: —
+Requirements / AC / decisions: post-PLAN-036
+Risk: H
+Blocked by: JIRA-TMP-036, JIRA-TMP-CP2
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",High,To Do,v1.0,area-ops,checkpoint,risk-h,,,,,,,
+301,2,Task,TD-COND-01 governance: operator-signed statement that tunnel exposes only `/webhooks/jira` with log evidence from first run,,"GOVERNANCE — approval-condition evidence task for the operator.
+
+Local id: JIRA-TMP-G01
+PLAN step: —
+Requirements / AC / decisions: TD-COND-01
+Risk: H
+Blocked by: JIRA-TMP-017
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",High,To Do,v1.0,area-sync,governance,risk-h,,,,,,,
+302,2,Task,TD-COND-04 governance: documented adaptive-cadence rule + metric alarm,,"GOVERNANCE — approval-condition evidence task for the operator.
+
+Local id: JIRA-TMP-G02
+PLAN step: —
+Requirements / AC / decisions: TD-COND-04
+Risk: M
+Blocked by: JIRA-TMP-016
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,To Do,v1.0,area-sync,governance,risk-m,,,,,,,
+303,5,Task,TD-COND-03 governance: 90-day Jira API Token rotation calendar reminder,,"GOVERNANCE — approval-condition evidence task for the operator.
+
+Local id: JIRA-TMP-G03
+PLAN step: —
+Requirements / AC / decisions: TD-COND-03
+Risk: M
+Blocked by: JIRA-TMP-035
+
+Definition of Done: approved scope implemented; diff limited to listed paths; review completed; docs updated where required.
+Source: 04-PLANNING/07_Jira_Task_Breakdown_RESULT.md §4–§7 · 04-PLANNING/03_Implementation_Plan_RESULT.md",Medium,To Do,v1.0,area-security,governance,risk-m,,,,,,,
