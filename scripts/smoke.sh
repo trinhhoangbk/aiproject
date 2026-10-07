@@ -146,12 +146,16 @@ hdr "PS-06  Webhook event metric"
 # Here we only verify the counter is registered and reachable.
 if [[ -n "$ADMIN_EMAIL" ]]; then
   P=$(curl -sS -b "$COOKIE" "$HUB_URL/actuator/prometheus" || true)
-  # Micrometer-registry-prometheus may render a counter named foo_total as
-  # either foo_total or foo_total_total depending on version. Match either.
+  # Counter lines look like  `name{labels} 5.0`  or  `name 5.0`.
+  # Older Micrometer-registry-prometheus appends an extra `_total`.
   for M in jira_events_processed_total jira_webhook_signature_failed_total mv_refresh_total audit_writes_total; do
-    LINE=$(printf '%s\n' "$P" | awk -v m="$M" '$1 == m || $1 == m"_total" {print; exit}')
+    LINE=$(printf '%s\n' "$P" | awk -v m="$M" '
+      {
+        split($1, a, "{");
+        if (a[1] == m || a[1] == m "_total") { print; exit }
+      }')
     if [[ -n "$LINE" ]]; then
-      V=$(printf '%s' "$LINE" | awk '{print $2}')
+      V=$(printf '%s' "$LINE" | awk '{print $NF}')
       pass "$M present (current=${V:-0})"
     else
       fail "$M MISSING from /actuator/prometheus"
