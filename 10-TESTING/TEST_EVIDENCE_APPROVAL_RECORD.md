@@ -33,7 +33,7 @@ TEST EVIDENCE VERIFIED
 
 ## 3. Carried into Step 11 (not closed by this approval)
 
-C-2 SPA workload field mismatch (SF-04) · C-3 DB/Kafka paths without automated tests · C-4 TD-COND-01 tunnel narrowing · C-5 worklog page > 20 · C-6 AC-009.1 performance · C-7 commit evidence files.
+C-2 SPA workload field mismatch (SF-04) · C-3 DB/Kafka paths without automated tests · C-4 TD-COND-01 tunnel narrowing · C-5 worklog page > 20 · C-6 AC-009.1 performance · ~~C-7 commit evidence files~~ — closed in `d589193`.
 
 ## 4. Next authorized stage
 
