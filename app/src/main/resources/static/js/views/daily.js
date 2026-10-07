@@ -1,20 +1,22 @@
 import { escapeHtml } from "../app.js";
+import { memberPicker } from "./_member.js";
 
 export async function renderDaily(root, { me, params, api }) {
-  const date = params.get("date") || new Date().toISOString().slice(0, 10);
-  const memberId = params.get("memberId") || me.memberId;
+  // Today in Asia/Saigon (DEC-002), not UTC — before 07:00 ICT the UTC date is still yesterday.
+  const date = params.get("date") || new Date().toLocaleDateString("sv-SE", { timeZone: "Asia/Saigon" });
+  // "" = whole team (ADMIN/MANAGER only); default = yourself.
+  const memberId = params.has("memberId") ? params.get("memberId") : me.memberId;
   const excludeDiscarded = params.get("excludeDiscarded") !== "false";
 
   const url = `/api/reporting/daily?date=${encodeURIComponent(date)}`
-    + `&memberId=${encodeURIComponent(memberId)}`
+    + (memberId ? `&memberId=${encodeURIComponent(memberId)}` : "")
     + `&excludeDiscarded=${excludeDiscarded}`;
-  const rpt = await api.get(url);
+  const [rpt, picker] = await Promise.all([api.get(url), memberPicker(api, me, memberId, { allowTeam: true })]);
 
   root.innerHTML = `
     <div class="filters">
       <label>Ngày<input type="date" id="date" value="${escapeHtml(date)}"></label>
-      ${(me.role === "ADMIN" || me.role === "MANAGER")
-        ? `<label>Member ID<input id="memberId" value="${escapeHtml(memberId)}"></label>` : ""}
+      ${picker}
       <label>Loại trừ Discarded
         <select id="excludeDiscarded">
           <option value="true"  ${excludeDiscarded ? "selected" : ""}>Có</option>

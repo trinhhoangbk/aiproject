@@ -1,20 +1,20 @@
 import { escapeHtml } from "../app.js";
+import { memberPicker } from "./_member.js";
 
 const OB_LABEL = { "1_to_3_days": "1–3 ngày", "4_to_7_days": "4–7 ngày", "more_than_a_week": ">1 tuần" };
 const TPR_LABEL = { yellow: "Cảnh báo (yellow)", red: "Nguy cấp (red)", none: "An toàn" };
 
 export async function renderOverdue(root, { me, params, api }) {
   const memberId = params.get("memberId") || me.memberId;
-  const [overdue, warnings] = await Promise.all([
+  const [overdue, warnings, picker] = await Promise.all([
     api.get(`/api/overdue?memberId=${encodeURIComponent(memberId)}`),
     api.get(`/api/overdue/warnings?memberId=${encodeURIComponent(memberId)}`),
+    memberPicker(api, me, memberId),
   ]);
 
   root.innerHTML = `
     <div class="filters">
-      ${(me.role === "ADMIN" || me.role === "MANAGER")
-        ? `<label>Member ID<input id="memberId" value="${escapeHtml(memberId)}"></label>
-           <button id="go">Xem</button>` : ""}
+      ${picker ? picker + `<button id="go">Xem</button>` : ""}
     </div>
 
     <div class="card">

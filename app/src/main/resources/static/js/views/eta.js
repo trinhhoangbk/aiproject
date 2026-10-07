@@ -1,14 +1,16 @@
 import { escapeHtml } from "../app.js";
+import { memberPicker } from "./_member.js";
 
 export async function renderEta(root, { me, params, api }) {
   const memberId = params.get("memberId") || me.memberId;
-  const eta = await api.get(`/api/eta/${encodeURIComponent(memberId)}`);
+  const [eta, picker] = await Promise.all([
+    api.get(`/api/eta/${encodeURIComponent(memberId)}`),
+    memberPicker(api, me, memberId),
+  ]);
 
   root.innerHTML = `
     <div class="filters">
-      ${(me.role === "ADMIN" || me.role === "MANAGER")
-        ? `<label>Member ID<input id="memberId" value="${escapeHtml(memberId)}"></label>
-           <button id="go">Xem</button>` : ""}
+      ${picker ? picker + `<button id="go">Xem</button>` : ""}
     </div>
     <div class="card">
       <h1>ETA cá nhân — mỏ-neo ${escapeHtml(eta.anchor)}</h1>
