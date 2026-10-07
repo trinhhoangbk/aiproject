@@ -111,7 +111,9 @@ if [[ -n "$TUNNEL_URL" ]]; then
   OUT=$(curl -sS -o /dev/null -w '%{http_code}' "$TUNNEL_URL/api/auth/me" || true)
   [[ "$OUT" == "404" ]] && pass "tunnel /api/auth/me → 404 (narrowing OK, TD-COND-01)" \
     || fail "tunnel /api/auth/me HTTP $OUT (expected 404 — tunnel exposes too much)"
-  OUT=$(curl -sS -o /dev/null -w '%{http_code}' "$TUNNEL_URL/webhooks/jira" || true)
+  OUT=$(curl -sS -o /dev/null -w '%{http_code}' -X POST "$TUNNEL_URL/webhooks/jira" \
+      -H 'Content-Type: application/json' -H 'ngrok-skip-browser-warning: 1' \
+      -d '{"timestamp":0,"webhookEvent":"ping"}' || true)
   [[ "$OUT" == "401" ]] && pass "tunnel /webhooks/jira (no HMAC) → 401" \
     || fail "tunnel /webhooks/jira HTTP $OUT (expected 401)"
 else
@@ -152,7 +154,7 @@ if [[ -n "$ADMIN_EMAIL" ]]; then
     LINE=$(printf '%s\n' "$P" | awk -v m="$M" '
       {
         split($1, a, "{");
-        if (a[1] == m || a[1] == m "_total") { print; exit }
+        if (!found && (a[1] == m || a[1] == m "_total")) { print; found=1 }
       }')
     if [[ -n "$LINE" ]]; then
       V=$(printf '%s' "$LINE" | awk '{print $NF}')
