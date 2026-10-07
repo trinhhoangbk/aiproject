@@ -56,6 +56,27 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(pd);
     }
 
+    /** AC-006.5 / 02 API CV-04: Jira rejected the write → 422 with Jira's message so the UI can roll back. */
+    @ExceptionHandler(com.mbs.hub.jira.client.JiraClientException.class)
+    public ResponseEntity<ProblemDetail> handleJiraRejected(com.mbs.hub.jira.client.JiraClientException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
+        pd.setType(URI.create("https://hub.local/errors/jira-rejected"));
+        pd.setTitle("Jira rejected the change");
+        pd.setProperty("jiraStatus", ex.status());
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(pd);
+    }
+
+    /** Jira 429 on a write: tell the caller when to retry instead of a bare 500. */
+    @ExceptionHandler(com.mbs.hub.jira.client.JiraRateLimitException.class)
+    public ResponseEntity<ProblemDetail> handleJiraRateLimited(com.mbs.hub.jira.client.JiraRateLimitException ex) {
+        ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.SERVICE_UNAVAILABLE, ex.getMessage());
+        pd.setType(URI.create("https://hub.local/errors/jira-rate-limited"));
+        pd.setTitle("Jira rate limit — retry later");
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .header("Retry-After", String.valueOf(ex.retryAfter().toSeconds()))
+                .body(pd);
+    }
+
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ProblemDetail> handleConflict(IllegalStateException ex) {
         ProblemDetail pd = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());

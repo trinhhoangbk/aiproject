@@ -94,7 +94,7 @@ public class AssignmentService {
                         "assignee call returned " + assignResult.statusCode());
             }
 
-            Map<String, Object> adf = adfComment(requestedBy, req.reason(), req.pipelineId());
+            Map<String, Object> adf = adfComment(actorName(requestedBy), req.reason(), req.pipelineId());
             WriteOutcome commentResult = writeClient.commentIssue(req.issueKey(), adf);
             auditPayload.put("commentCall", Map.of(
                     "method", commentResult.method(),
@@ -127,18 +127,21 @@ public class AssignmentService {
         }
     }
 
+    /** Display name of the requesting manager for the Jira comment (AC-006.4). */
+    private String actorName(UUID actor) {
+        if (actor == null) return "system";
+        return members.findById(actor).map(Member::getDisplayName).orElse(actor.toString());
+    }
+
     /**
-     * Minimal ADF (Atlassian Document Format) comment.
-     *
-     * <p>Simple paragraph with the reason + attribution — sufficient for the audit
-     * trail inside Jira. A richer ADF (mentions, link to pipeline) is a cosmetic
-     * follow-up and does not change the DEC-008 contract.</p>
+     * ADF comment. The first sentence is the AC-006.4 wording verbatim
+     * ("Task reassigned via Resource Balancing Hub by [Manager Name]"); the reason
+     * and pipeline follow so the Jira history explains the move.
      */
-    Map<String, Object> adfComment(UUID actor, String reason, UUID pipelineId) {
-        String text = "Hub assignment — requested by "
-                + (actor != null ? actor.toString() : "system")
-                + ". Reason: " + reason
-                + (pipelineId != null ? "  (pipeline " + pipelineId + ")" : "");
+    Map<String, Object> adfComment(String managerName, String reason, UUID pipelineId) {
+        String text = "Task reassigned via Resource Balancing Hub by " + managerName + "."
+                + (reason == null || reason.isBlank() ? "" : " Reason: " + reason + ".")
+                + (pipelineId != null ? " Pipeline: " + pipelineId + "." : "");
         return Map.of(
                 "type", "doc",
                 "version", 1,

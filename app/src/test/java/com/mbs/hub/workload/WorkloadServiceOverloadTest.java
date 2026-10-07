@@ -23,7 +23,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 
-/** TC-WL-01..05 — AC-001.2 (week), AC-001.3 + DEC-010 (day, cannot-reschedule). */
+/** TC-WL-01..06 — AC-001.2 (week), AC-001.3 + DEC-010 (day, cannot-reschedule), AC-001.4. */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
 class WorkloadServiceOverloadTest {
@@ -91,5 +91,16 @@ class WorkloadServiceOverloadTest {
         OverloadView v = overload(issue("KAN-1", "6", fri), issue("KAN-2", "6", fri));
         assertThat(v.reasons()).hasSize(1);
         assertThat(v.reasons().get(0).hardDeadlineCriteria()).contains("hub_lock_flag");
+    }
+
+    @Test
+    void TC_WL_06_unestimatedMeansNoRemainingAndNoOriginal() {
+        IssueProjection zeroWithOriginal = issue("KAN-3", "0", null);
+        zeroWithOriginal.setOriginalEstimateH(new java.math.BigDecimal("8"));
+
+        assertThat(WorkloadService.isUnestimated(issue("KAN-1", null, null))).isTrue();
+        assertThat(WorkloadService.isUnestimated(issue("KAN-2", "0", null))).isTrue();
+        assertThat(WorkloadService.isUnestimated(zeroWithOriginal)).isFalse();
+        assertThat(WorkloadService.isUnestimated(issue("KAN-4", "8", null))).isFalse();
     }
 }

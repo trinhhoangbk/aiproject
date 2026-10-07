@@ -28,8 +28,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class OverdueCalculator {
 
-    private static final BigDecimal NO_ESTIMATE_PLACEHOLDER_HOURS = new BigDecimal("4");
-
     private final CapacityResolver capacity;
     private final WorkingDayCalculator workingDays;
     private final IssueProjectionRepository issues;
@@ -66,8 +64,7 @@ public class OverdueCalculator {
 
     private MemberOverdueRow buildRow(Member m, IssueProjection i, LocalDate due,
                                       LocalDate today, BigDecimal dailyH) {
-        BigDecimal remainingH = i.getRemainingEstimateH();
-        if (remainingH == null) remainingH = NO_ESTIMATE_PLACEHOLDER_HOURS;
+        BigDecimal remainingH = AllocationRateCalculator.effectiveRemaining(i);   // B-RULE-02 / AC-001.4
 
         if (due.isBefore(today)) {
             // Overdue path — F-01 bands by calendar-day distance.

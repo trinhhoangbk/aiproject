@@ -22,6 +22,7 @@ Level: **U** unit (Mockito) · **H** HTTP-mocked client · **W** Spring-MVC secu
 | TC-WL-03 | AC-001.3 + DEC-010 | U | two issues due Fri 10-09, 6 h + 6 h, one priority `Blocker`, daily cap 8 h | overload | reason `level=day`, date 10-09, criteria contains `priority_blocker` |
 | TC-WL-04 | AC-001.3 | U | same 12 h on 10-09, no hard-deadline criterion | overload | **no** day reason (can be rescheduled) |
 | TC-WL-05 | AC-001.3 + DEC-010 crit 3 | U | 12 h on 10-09, issue key present in lock-deadline table | overload | day reason with `hub_lock_flag` |
+| TC-WL-06 | AC-001.4 (SF-05) — *added after run 2* | U | remaining null / 0 without original / 0 with original 8 h / 8 h | isUnestimated | true / true / false / false |
 
 ### Allocation rate / heatmap — REQ-006, AC-001.4
 | ID | AC | Lvl | Given | When | Then |
@@ -110,7 +111,7 @@ Level: **U** unit (Mockito) · **H** HTTP-mocked client · **W** Spring-MVC secu
 | AC | Cases | Status |
 |---|---|---|
 | AC-001.1 | — | **uncovered at Step 10** (project-breakdown ratios) → E2E/UI (SF-04) |
-| AC-001.2 / .3 / .4 / .5 | WL-01..05, AR-03, OD-09, existing CapacityResolverTest | covered |
+| AC-001.2 / .3 / .4 / .5 | WL-01..06, AR-03, OD-09, existing CapacityResolverTest | covered |
 | AC-002.1 / .2 / .3 / .4 | DR-01..05, WP-01, SEC-06 | covered |
 | AC-003.1 / .2 / .4 / .5 | OD-01..08, existing band tests | covered |
 | AC-003.3 | — | E2E |

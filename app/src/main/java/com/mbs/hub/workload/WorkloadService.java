@@ -1,5 +1,6 @@
 package com.mbs.hub.workload;
 
+import com.mbs.hub.mv.calc.AllocationRateCalculator;
 import com.mbs.hub.core.capacity.CapacityResolver;
 import com.mbs.hub.core.capacity.EffectiveCapacity;
 import com.mbs.hub.core.lockdeadline.LockDeadlineFlagRepository;
@@ -131,8 +132,7 @@ public class WorkloadService {
         BigDecimal totalCount = BigDecimal.ZERO;
         BigDecimal totalHours = BigDecimal.ZERO;
         for (IssueProjection i : active) {
-            BigDecimal h = i.getRemainingEstimateH();
-            if (h == null) h = NO_ESTIMATE_HOURS;
+            BigDecimal h = AllocationRateCalculator.effectiveRemaining(i);
             counts.computeIfAbsent(i.getProjectKey(), k -> new int[]{0})[0]++;
             hours.merge(i.getProjectKey(), h, BigDecimal::add);
             totalCount = totalCount.add(BigDecimal.ONE);
@@ -154,8 +154,15 @@ public class WorkloadService {
         return out;
     }
 
+    /** AC-001.4: no estimate = remaining null, or 0 with no original estimate either. */
+    static boolean isUnestimated(IssueProjection i) {
+        BigDecimal rem = i.getRemainingEstimateH();
+        BigDecimal orig = i.getOriginalEstimateH();
+        return rem == null || (rem.signum() == 0 && (orig == null || orig.signum() == 0));
+    }
+
     private UnestimatedSummary unestimated(List<IssueProjection> active) {
-        int n = (int) active.stream().filter(i -> i.getRemainingEstimateH() == null).count();
+        int n = (int) active.stream().filter(WorkloadService::isUnestimated).count();
         return new UnestimatedSummary(n, HALF_MD);
     }
 
@@ -167,7 +174,7 @@ public class WorkloadService {
 
         // Week-level
         BigDecimal weekCommitted = active.stream()
-                .map(i -> i.getRemainingEstimateH() == null ? NO_ESTIMATE_HOURS : i.getRemainingEstimateH())
+                .map(AllocationRateCalculator::effectiveRemaining)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
         if (weekCommitted.compareTo(weeklyCap) > 0) {
             reasons.add(new OverloadReason("week", null, weekCommitted, weeklyCap, null));
@@ -183,7 +190,7 @@ public class WorkloadService {
         Map<LocalDate, List<IssueProjection>> issuesByDue = new HashMap<>();
         for (IssueProjection i : active) {
             if (i.getDueDate() == null) continue;
-            BigDecimal h = i.getRemainingEstimateH() == null ? NO_ESTIMATE_HOURS : i.getRemainingEstimateH();
+            BigDecimal h = AllocationRateCalculator.effectiveRemaining(i);
             hoursByDue.merge(i.getDueDate(), h, BigDecimal::add);
             issuesByDue.computeIfAbsent(i.getDueDate(), k -> new ArrayList<>()).add(i);
         }
