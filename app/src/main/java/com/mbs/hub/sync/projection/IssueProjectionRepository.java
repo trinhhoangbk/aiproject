@@ -13,6 +13,12 @@ public interface IssueProjectionRepository extends JpaRepository<IssueProjection
     List<IssueProjection> findByAssigneeAccountIdAndStatusCategoryNotAndAllowListOkTrue(
             String assigneeAccountId, String statusCategoryNot);
 
+    /** Re-flag every cached issue of a project when its allow-list entry changes (DEC-005). */
+    @Modifying
+    @Query(value = "UPDATE jira.issue_projection SET allow_list_ok = :ok WHERE project_key = :projectKey",
+           nativeQuery = true)
+    int updateAllowListOk(@Param("projectKey") String projectKey, @Param("ok") boolean ok);
+
     /**
      * Native UPSERT with monotonic guard — overwrite only when incoming event is newer.
      * Returns number of rows affected (0 means the event was stale).

@@ -114,7 +114,7 @@ public class BalancingService {
                     .filter(i -> i.getDueDate() != null
                                && !i.getDueDate().isBefore(today)
                                && !i.getDueDate().isAfter(deadline))
-                    .map(this::effectiveRemaining)
+                    .map(com.mbs.hub.mv.calc.AllocationRateCalculator::effectiveRemaining)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
             BigDecimal committedMd = dailyHours.signum() > 0
                     ? committedHours.divide(dailyHours, 2, RoundingMode.HALF_UP)
@@ -150,11 +150,6 @@ public class BalancingService {
                 .toList();
     }
 
-    /** B-RULE-02 fallback: an issue with no remaining estimate counts as 4 h (0.5 MD @ 8h). */
-    private BigDecimal effectiveRemaining(IssueProjection i) {
-        BigDecimal r = i.getRemainingEstimateH();
-        return (r == null || r.signum() <= 0) ? BigDecimal.valueOf(4) : r;
-    }
 
     private static String skillKey(String l1, String l2) {
         return l1 + "/" + (l2 == null ? "" : l2);

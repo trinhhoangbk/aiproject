@@ -56,7 +56,7 @@ public class AllocationRateCalculator {
         BigDecimal standardH = dailyH.multiply(BigDecimal.valueOf(wd));
         BigDecimal standardMd = toMd(standardH, dailyH);
 
-        BigDecimal committedH = sumRemainingHours(member.getJiraAccountId());
+        BigDecimal committedH = sumRemainingHours(member.getJiraAccountId(), endExcl);
         BigDecimal committedMd = toMd(committedH, dailyH);
 
         BigDecimal availableMd = standardMd.subtract(committedMd).setScale(2, RoundingMode.HALF_UP);
@@ -76,16 +76,30 @@ public class AllocationRateCalculator {
         return row;
     }
 
-    private BigDecimal sumRemainingHours(String jiraAccountId) {
+    /**
+     * AC-006.1: Committed = remaining work that falls in the horizon. An issue counts
+     * when it is due before the window ends — this includes overdue work (still owed)
+     * and undated work (conservatively counted in every horizon).
+     */
+    private BigDecimal sumRemainingHours(String jiraAccountId, LocalDate windowEndExclusive) {
         if (jiraAccountId == null) return BigDecimal.ZERO;
         List<IssueProjection> active = issues
                 .findByAssigneeAccountIdAndStatusCategoryNotAndAllowListOkTrue(jiraAccountId, "done");
         BigDecimal sum = BigDecimal.ZERO;
         for (IssueProjection i : active) {
-            BigDecimal h = i.getRemainingEstimateH();
-            sum = sum.add(h == null ? NO_ESTIMATE_PLACEHOLDER_HOURS : h);   // B-RULE-02
+            if (i.getDueDate() != null && !i.getDueDate().isBefore(windowEndExclusive)) continue;
+            sum = sum.add(effectiveRemaining(i));
         }
         return sum;
+    }
+
+    /** B-RULE-02: no estimate (null, or 0 remaining with no original) → 0.5 MD placeholder. */
+    public static BigDecimal effectiveRemaining(IssueProjection i) {
+        BigDecimal rem  = i.getRemainingEstimateH();
+        BigDecimal orig = i.getOriginalEstimateH();
+        boolean unestimated = rem == null
+                || (rem.signum() == 0 && (orig == null || orig.signum() == 0));
+        return unestimated ? NO_ESTIMATE_PLACEHOLDER_HOURS : rem;
     }
 
     /** 1 MD = member's daily hours (not globally 8h) per DEC-004 — matches 04 Domain glossary. */

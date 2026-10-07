@@ -1,6 +1,9 @@
 package com.mbs.hub.core.allowlist;
 
 import com.mbs.hub.core.allowlist.dto.AllowListUpsertRequest;
+import com.mbs.hub.sync.ProjectionUpdatedEvent;
+import com.mbs.hub.sync.projection.IssueProjectionRepository;
+import org.springframework.context.ApplicationEventPublisher;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +16,22 @@ import org.springframework.security.access.prepost.PreAuthorize;
 public class AllowListController {
 
     private final AllowListRepository repo;
-    public AllowListController(AllowListRepository repo) { this.repo = repo; }
+    private final IssueProjectionRepository issues;
+    private final ApplicationEventPublisher events;
+
+    public AllowListController(AllowListRepository repo,
+                               IssueProjectionRepository issues,
+                               ApplicationEventPublisher events) {
+        this.repo = repo;
+        this.issues = issues;
+        this.events = events;
+    }
+
+    /** Projections cached before the allow-list change keep a stale flag otherwise. */
+    private void reflag(String projectKey, boolean ok) {
+        issues.updateAllowListOk(projectKey, ok);
+        events.publishEvent(new ProjectionUpdatedEvent(null, projectKey));
+    }
 
     @GetMapping
     public List<AllowListEntry> list() { return repo.findAll(); }
@@ -30,9 +48,15 @@ public class AllowListController {
             return fresh;
         });
         if (req.enabled() != null) e.setEnabled(req.enabled());
-        return repo.save(e);
+        AllowListEntry saved = repo.save(e);
+        reflag(projectKey, saved.isEnabled());
+        return saved;
     }
 
     @DeleteMapping("/{projectKey}")
-    public void delete(@PathVariable String projectKey) { repo.deleteById(projectKey); }
+    @Transactional
+    public void delete(@PathVariable String projectKey) {
+        repo.deleteById(projectKey);
+        reflag(projectKey, false);
+    }
 }
