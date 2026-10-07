@@ -21,7 +21,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 /**
@@ -53,6 +54,9 @@ public class MaterializedViewRefresher {
             });
     private final AtomicReference<ScheduledFuture<?>> pending = new AtomicReference<>();
 
+    /** Programmatic tx: the debounced path calls refreshAll() on `this`, bypassing the
+     *  Spring proxy, so a declarative @Transactional would silently not apply. */
+    private final TransactionTemplate tx;
     private final Counter refreshCount;
     private final Timer   refreshDuration;
 
@@ -61,7 +65,9 @@ public class MaterializedViewRefresher {
                                      OverdueCalculator overdue,
                                      AllocationRateRepository allocationRepo,
                                      MemberOverdueRepository overdueRepo,
+                                     PlatformTransactionManager txManager,
                                      MeterRegistry metrics) {
+        this.tx = new TransactionTemplate(txManager);
         this.members = members;
         this.allocation = allocation;
         this.overdue = overdue;
@@ -101,15 +107,23 @@ public class MaterializedViewRefresher {
         refreshAll();
     }
 
-    @Transactional
     public void refreshAll() {
         Timer.Sample s = Timer.start();
         try {
             List<Member> all = members.findAll();
-            for (Member m : all) refreshOne(m);
+            int failed = 0;
+            for (Member m : all) {
+                // One transaction per member: a bad row for one person must not
+                // leave everyone after them un-refreshed.
+                try {
+                    tx.executeWithoutResult(st -> refreshOne(m));
+                } catch (Exception e) {
+                    failed++;
+                    log.warn("MV refresh failed for member {}", m.getId(), e);
+                }
+            }
             refreshCount.increment();
-        } catch (Exception e) {
-            log.warn("MV refresh failed: {}", e.getMessage());
+            log.info("MV refresh done: {} members, {} failed", all.size(), failed);
         } finally {
             s.stop(refreshDuration);
         }
